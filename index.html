@@ -16,8 +16,6 @@
             --pub-wood: #1a0f08;
             --pub-accent: #f59e0b;
             --pub-paper: #fdf6e3;
-            --neon-pink: #ff00ff;
-            --neon-blue: #00f2ff;
         }
 
         /* --- THEMES --- */
@@ -83,12 +81,6 @@
             transform: scale(1.1) !important;
         }
 
-        .theme-c64 .turf-track {
-            background: #00aa00;
-            border: 4px solid #fff;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 48px, #ffffff 50px);
-        }
-
         body.theme-lsd {
             background: #000;
             animation: lsd-pulse 5s infinite linear;
@@ -96,20 +88,9 @@
         }
 
         @keyframes lsd-pulse {
-            0% {
-                background: #f0f;
-                filter: hue-rotate(0deg);
-            }
-
-            50% {
-                background: #0ff;
-                filter: hue-rotate(180deg);
-            }
-
-            100% {
-                background: #f0f;
-                filter: hue-rotate(360deg);
-            }
+            0% { background: #f0f; filter: hue-rotate(0deg); }
+            50% { background: #0ff; filter: hue-rotate(180deg); }
+            100% { background: #f0f; filter: hue-rotate(360deg); }
         }
 
         .theme-lsd .paper-note {
@@ -129,11 +110,9 @@
 
         body.theme-urban {
             background-color: #1a1a1a;
-            background-image:
-                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
             color: #e2e8f0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         .theme-urban .chalk-card {
@@ -142,104 +121,6 @@
             border: 1px solid rgba(0, 242, 255, 0.3);
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
             border-radius: 0;
-        }
-
-        .theme-urban .paper-note {
-            background: #262626;
-            color: #00f2ff;
-            border: 1px solid #00f2ff;
-            clip-path: none;
-            transform: none !important;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.3s;
-        }
-
-        .theme-urban .paper-note.active-choice {
-            background: #00f2ff !important;
-            color: #000 !important;
-            box-shadow: 0 0 30px #00f2ff !important;
-            transform: scale(1.05) !important;
-        }
-
-        .theme-urban h1 {
-            color: #fefe00;
-            font-family: 'Inter', sans-serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -0.05em;
-        }
-
-        .theme-urban .turf-track {
-            background: #111;
-            border: 2px solid #333;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 49px, #444 50px);
-        }
-
-        body.theme-solaris {
-            background-color: #050505;
-            background-image:
-                radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050505 100%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
-            color: #f1f5f9;
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .theme-solaris .chalk-card {
-            background: rgba(15, 10, 25, 0.4);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
-            border-radius: 24px;
-        }
-
-        .theme-solaris .paper-note {
-            background: rgba(255, 255, 255, 0.03);
-            color: #d4af37;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            clip-path: none;
-            transform: none !important;
-            font-weight: 500;
-            text-transform: none;
-            letter-spacing: 0.02em;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            border-radius: 12px;
-            font-size: 1.1rem;
-        }
-
-        .theme-solaris .paper-note.active-choice {
-            background: #d4af37 !important;
-            color: #000 !important;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4) !important;
-            transform: translateY(-5px) !important;
-            border-color: #fff !important;
-        }
-
-        .theme-solaris h1 {
-            color: #d4af37;
-            background: linear-gradient(135deg, #fff 0%, #d4af37 50%, #8a6d3b 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 900;
-            letter-spacing: -0.02em;
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
-        }
-
-        .theme-solaris .turf-track {
-            background: #0a0a0a;
-            border: 1px solid #222;
-            background-image:
-                linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
-            background-size: 50px 100%;
-        }
-
-        .theme-solaris .race-horse img {
-            border: 2px solid #d4af37;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
         .marker {
@@ -333,7 +214,7 @@
             font-weight: 700;
             background: rgba(255,255,255,0.05);
             border: 2px solid rgba(255,255,255,0.1);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s;
             cursor: pointer;
         }
 
@@ -395,46 +276,13 @@
         }
 
         @keyframes throwOut {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(600px, -400px) rotate(720deg);
-                opacity: 0;
-            }
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(600px, -400px) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
 
 <body class="theme-normal min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700">
-    <div class="file-info">
-        Zuletzt geändert: <span id="formatted-date"></span>
-    </div>
-
-    <script>
-        // 1. Last-Modified String holen
-        const lastMod = document.lastModified;
-
-        // 2. In ein Datum-Objekt umwandeln
-        const dateObj = new Date(lastMod);
-
-        // 3. Formatieren für Deutschland (Tag. Monat Jahr, Uhrzeit)
-        const options = {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        };
-
-        const formattedDate = dateObj.toLocaleDateString('de-DE', options);
-
-        // 4. In die HTML-Seite schreiben
-        document.getElementById('formatted-date').textContent = formattedDate;
-    </script>
 
     <div id="emoji-display"
         class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[1500] opacity-0 pointer-events-none transition-opacity duration-300">
@@ -486,17 +334,15 @@
                 </div>
 
                 <div class="mb-6">
-                    <p
-                        class="text-[10px] uppercase font-bold text-orange-500 mb-3 tracking-widest italic text-left ml-2">
-                        Themen-Mix:</p>
+                    <p class="text-[10px] uppercase font-bold text-orange-500 mb-3 tracking-widest italic text-left ml-2">Themen-Mix:</p>
                     <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <select id="cfg-count" class="bg-black border border-white/10 rounded-lg p-3 text-white">
                         <option value="3">3 FRAGEN</option>
-                        <option value="5">5 FRAGEN</option>
-                        <option value="10" selected>10 FRAGEN</option>
+                        <option value="5" selected>5 FRAGEN</option>
+                        <option value="10">10 FRAGEN</option>
                     </select>
                     <select id="cfg-diff"
                         class="bg-black border border-white/10 rounded-lg p-3 text-orange-500 font-bold uppercase">
@@ -505,8 +351,7 @@
                     </select>
                 </div>
                 <button onclick="initiateQuiz()"
-                    class="bg-orange-800 w-full py-6 rounded-2xl text-3xl font-black uppercase italic shadow-2xl">ZÜNDEN!
-                    🍻</button>
+                    class="bg-orange-800 w-full py-6 rounded-2xl text-3xl font-black uppercase italic shadow-2xl">ZÜNDEN! 🍻</button>
             </div>
         </div>
 
@@ -530,8 +375,7 @@
                     class="text-4xl lg:text-6xl font-black text-white mb-8 italic underline decoration-orange-700"></h3>
                 <p id="sauf-text" class="text-xl text-yellow-500 font-bold mb-10 italic"></p>
                 <button id="host-next" onclick="nextRound()"
-                    class="hidden bg-white text-black px-16 py-4 rounded-xl font-black text-xl uppercase shadow-2xl mx-auto block hover:scale-105 transition">Nächste
-                    Runde ➔</button>
+                    class="hidden bg-white text-black px-16 py-4 rounded-xl font-black text-xl uppercase shadow-2xl mx-auto block hover:scale-105 transition">Nächste Runde ➔</button>
             </div>
         </div>
 
@@ -539,31 +383,23 @@
             <h2 class="text-7xl marker text-orange-800 mb-10 text-center italic">ABRECHNUNG!</h2>
             <div id="podium" class="space-y-4 mb-16"></div>
             <div class="receipt-paper">
-                <h3 class="text-xl font-bold mb-6 text-center border-b-2 border-black pb-2 uppercase">SÜNDENREGISTER
-                </h3>
+                <h3 class="text-xl font-bold mb-6 text-center border-b-2 border-black pb-2 uppercase text-black">SÜNDENREGISTER</h3>
                 <div id="summary-table" class="space-y-4"></div>
             </div>
         </div>
     </main>
 
     <aside class="w-full lg:w-1/3 bg-[#1e293b]/90 p-8 flex flex-col border-t lg:border-t-0 lg:border-l-8 border-orange-500/30 backdrop-blur-xl relative shadow-[0_0_100px_rgba(0,0,0,0.8)]">
-        <!-- Decorative pub elements -->
         <div class="absolute top-0 right-0 w-32 h-32 opacity-20 pointer-events-none transform translate-x-10 -translate-y-10">
             <img src="https://www.transparentpng.com/download/beer-mug/beer-mug-transparent-background-5.png" class="w-full">
         </div>
         
         <div class="mb-10 p-6 chalk-card rounded-2xl relative z-10">
             <div class="grid grid-cols-2 gap-2">
-                <button onclick="setTheme('theme-solaris')"
-                    class="bg-zinc-900 py-2 rounded text-[10px] font-bold uppercase border border-amber-500 text-amber-500 col-span-2">Solaris</button>
-                <button onclick="setTheme('theme-urban')"
-                    class="bg-zinc-700 py-2 rounded text-[10px] font-bold uppercase border border-cyan-400">Urban</button>
-                <button onclick="setTheme('theme-normal')"
-                    class="bg-zinc-800 py-2 rounded text-[10px] font-bold uppercase">Pub</button>
-                <button onclick="setTheme('theme-c64')"
-                    class="bg-blue-800 py-2 rounded text-[10px] font-bold uppercase">C64</button>
-                <button onclick="setTheme('theme-lsd')"
-                    class="bg-gradient-to-r from-purple-500 to-pink-500 py-2 rounded text-[10px] font-bold uppercase">LSD</button>
+                <button onclick="setTheme('theme-urban')" class="bg-zinc-700 py-2 rounded text-[10px] font-bold uppercase border border-cyan-400 col-span-2">Urban</button>
+                <button onclick="setTheme('theme-normal')" class="bg-zinc-800 py-2 rounded text-[10px] font-bold uppercase">Pub</button>
+                <button onclick="setTheme('theme-c64')" class="bg-blue-800 py-2 rounded text-[10px] font-bold uppercase">C64</button>
+                <button onclick="setTheme('theme-lsd')" class="bg-gradient-to-r from-purple-500 to-pink-500 py-2 rounded text-[10px] font-bold uppercase col-span-2">LSD</button>
             </div>
         </div>
         <h3 class="text-4xl sidebar-title mb-6 text-center italic">Stammtisch</h3>
@@ -574,32 +410,22 @@
             <button onclick="sendEmoji('🥃')" class="text-2xl hover:scale-125 transition">🥃</button>
             <button onclick="sendEmoji('⚽')" class="text-2xl hover:scale-125 transition">⚽</button>
             <button onclick="sendEmoji('🤮')" class="text-2xl hover:scale-125 transition">🤮</button>
-            <button onclick="sendEmoji('🤡')" class="text-2xl hover:scale-125 transition">🤡</button>
-            <button onclick="sendEmoji('🔥')" class="text-2xl hover:scale-125 transition">🔥</button>
-            <button onclick="sendEmoji('🚬')" class="text-2xl hover:scale-125 transition">🚬</button>
             <button onclick="sendEmoji('💩')" class="text-2xl hover:scale-125 transition">💩</button>
             <button onclick="sendEmoji('🏆')" class="text-2xl hover:scale-125 transition">🏆</button>
             <button onclick="sendEmoji('🥨')" class="text-2xl hover:scale-125 transition">🥨</button>
+            <button onclick="sendEmoji('🚬')" class="text-2xl hover:scale-125 transition">🚬</button>
+            <button onclick="sendEmoji('🔥')" class="text-2xl hover:scale-125 transition">🔥</button>
+            <button onclick="sendEmoji('🤡')" class="text-2xl hover:scale-125 transition">🤡</button>
         </div>
     </aside>
 
     <script>
         let peer, myId, myName, myAvatarIdx = 0, connections = [], isHost = false;
-        let gameState = { 
-            players: {}, 
-            questions: [], 
-            currentIndex: 0, 
-            status: 'LOBBY', 
-            showResolution: false, 
-            history: [], 
-            isLoading: false,
-            bets: {}, // { playerId: { type: 'points'|'sips', val: number } }
-            powerups: {} // { playerId: { used: { 5050: false, double: false, shield: false }, activeShield: false } }
-        };
+        let gameState = { players: {}, questions: [], currentIndex: 0, status: 'LOBBY', showResolution: false, history: [], isLoading: false, bets: {}, powerups: {}, saufText: "" };
 
         const TRIVIA_CATS = [
             { id: 9, name: "Gemischt" }, { id: 11, name: "Film" }, { id: 12, name: "Musik" },
-            { id: 15, name: "Video-Games" }, { id: 17, name: "Natur" }, { id: 18, name: "Computer" },
+            { id: 15, name: "Games" }, { id: 17, name: "Natur" }, { id: 18, name: "Computer" },
             { id: 21, name: "Sport" }, { id: 23, name: "Historie" }, { id: 24, name: "Politik" }, { id: 26, name: "Promis" }
         ];
         let selectedCats = [9];
@@ -618,98 +444,6 @@
             } catch (e) { return text; }
         }
 
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // km
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return Math.round(R * c);
-        }
-
-        async function generateCustomQuestions() {
-            const custom = [];
-            const geoSources = [
-                async () => { // 1. DISTANCE DUEL
-                    try {
-                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,capitalInfo,latlng");
-                        const data = (await res.json()).filter(c => c.capitalInfo && c.capitalInfo.latlng);
-                        const c1 = data[Math.floor(Math.random() * data.length)];
-                        const c2 = data[Math.floor(Math.random() * data.length)];
-                        const dist = calculateDistance(c1.latlng[0], c1.latlng[1], c2.latlng[0], c2.latlng[1]);
-                        const others = [
-                            Math.round(dist * 0.5 + Math.random() * 500),
-                            Math.round(dist * 1.5 + Math.random() * 500),
-                            Math.round(dist * 0.8 + Math.random() * 200)
-                        ];
-                        return { mode: 'MC', question: `GEOGRAPHIE: Wie viele km Luftlinie liegen zwischen <span class="text-orange-400 font-black">${c1.name.common}</span> und <span class="text-yellow-400 font-black">${c2.name.common}</span>?`, correct_answer: `${dist} km`, incorrect_answers: others.map(o => `${o} km`) };
-                    } catch (e) { return { mode: 'MC', question: "Was ist die Hauptstadt von Deutschland?", correct_answer: "Berlin", incorrect_answers: ["Bonn", "Hagen", "München"] }; }
-                },
-                async () => { // 2. OUTLINE ORACLE
-                    try {
-                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
-                        const data = await res.json();
-                        const country = data[Math.floor(Math.random() * data.length)];
-                        const code = country.cca2.toLowerCase();
-                        const imgUrl = `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${code}/1024.png`;
-                        const others = data.filter(d => d.name.common !== country.name.common).sort(() => Math.random() - 0.5).slice(0, 3).map(d => d.name.common);
-                        return { mode: 'IMG', image: imgUrl, question: "OUTLINE ORACLE: Welches Land hat diesen Umriss?", correct_answer: country.name.common, incorrect_answers: others };
-                    } catch (e) { return geoSources[0](); }
-                },
-                async () => { // 3. NEIGHBOR KNOCKOUT
-                    try {
-                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,borders");
-                        const allData = (await res.json());
-                        const data = allData.filter(c => c.borders && c.borders.length > 0);
-                        const country = data[Math.floor(Math.random() * data.length)];
-                        const neighborCode = country.borders[Math.floor(Math.random() * country.borders.length)];
-                        const neighbor = allData.find(c => c.cca3 === neighborCode).name.common;
-                        const others = allData.filter(c => !country.borders.includes(c.cca3) && c.cca3 !== country.cca3).sort(() => Math.random() - 0.5).slice(0, 3).map(c => c.name.common);
-                        return { mode: 'MC', question: `NEIGHBOR KNOCKOUT: Welches dieser Länder ist ein direkter Nachbar von <span class="text-green-400 font-black">${country.name.common}</span>?`, correct_answer: neighbor, incorrect_answers: others };
-                    } catch (e) { return geoSources[0](); }
-                },
-                async () => { // 4. SATELLITE CHECK
-                    try {
-                        const cities = [
-                            { n: "Paris", lat: 48.8566, lon: 2.3522 }, { n: "New York", lat: 40.7128, lon: -74.006 },
-                            { n: "Berlin", lat: 52.52, lon: 13.405 }, { n: "Tokyo", lat: 35.6895, lon: 139.6917 },
-                            { n: "Sydney", lat: -33.8688, lon: 151.2093 }, { n: "Kairo", lat: 30.0444, lon: 31.2357 },
-                            { n: "London", lat: 51.5074, lon: -0.1278 }, { n: "Rio de Janeiro", lat: -22.9068, lon: -43.1729 }
-                        ];
-                        const city = cities[Math.floor(Math.random() * cities.length)];
-                        const imgUrl = `https://static-maps.yandex.ru/1.x/?ll=${city.lon},${city.lat}&z=13&l=sat&size=600,450`;
-                        const others = cities.filter(c => c.n !== city.n).sort(() => Math.random() - 0.5).slice(0, 3).map(c => c.n);
-                        return { mode: 'IMG', image: imgUrl, question: "SATELLITE CHECK: Welche Metropole sehen wir hier?", correct_answer: city.n, incorrect_answers: others };
-                    } catch (e) { return geoSources[0](); }
-                },
-                async () => { // 5. URBAN DATA
-                    try {
-                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,population");
-                        const data = await res.json();
-                        const pool = data.sort(() => Math.random() - 0.5).slice(0, 4);
-                        const winner = pool.sort((a,b) => b.population - a.population)[0];
-                        const others = pool.filter(c => c.name.common !== winner.name.common).map(c => c.name.common);
-                        return {
-                            mode: 'MC',
-                            question: `POPULATIONS-POKER: Welches dieser Länder hat die meisten Einwohner?`,
-                            correct_answer: winner.name.common,
-                            incorrect_answers: others
-                        };
-                    } catch (e) { return geoSources[0](); }
-                }
-            ];
-
-            const count = 5; // We take 5 geo questions
-            for (let i = 0; i < count; i++) {
-                const source = geoSources[i % geoSources.length];
-                custom.push(await source());
-            }
-            return custom;
-        }
-
-        // UI INIT
         const AVATAR_SEEDS = ['Abe', 'Buster', 'Clyde', 'Zack', 'Fritz', 'Hulk', 'Bier', 'Pferd'];
         const avatarGrid = document.getElementById('avatar-grid');
         AVATAR_SEEDS.forEach((seed, idx) => {
@@ -733,18 +467,15 @@
             catGrid.appendChild(chip);
         });
 
-        const FOOTBALL_POOL = [
-            { mode: 'IMG', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/512px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png', question: "WELCHER KLUB?", correct_answer: "FC Bayern München", incorrect_answers: ["Augsburg", "Mainz", "Bochum"] },
-            { mode: 'IMG', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/512px-Borussia_Dortmund_logo.svg.png', question: "WELCHER KLUB?", correct_answer: "Borussia Dortmund", incorrect_answers: ["Schalke", "Bochum", "Essen"] }
-        ];
-
         function init() {
             peer = new Peer();
             peer.on('open', id => { myId = id; document.getElementById('display-id').innerText = id; });
             peer.on('connection', c => { 
-                connections.push(c); 
-                c.on('data', d => handleData(d, c)); 
-                c.on('close', () => { connections = connections.filter(conn => conn !== c); });
+                c.on('open', () => { 
+                    connections.push(c); 
+                    c.on('data', d => handleData(d, c)); 
+                    c.on('close', () => { connections = connections.filter(conn => conn !== c); });
+                }); 
             });
             peer.on('error', err => console.error("PeerJS Error:", err));
         }
@@ -760,11 +491,8 @@
         function joinGame() {
             myName = document.getElementById('username').value.trim() || "Gast";
             const hId = document.getElementById('join-id').value.trim(); const c = peer.connect(hId);
-            c.on('open', () => { 
-                connections.push(c); 
-                c.send({ type: 'JOIN', name: myName, avatar: AVATAR_SEEDS[myAvatarIdx] }); 
-                c.on('data', d => handleData(d, c));
-            });
+            c.on('open', () => { connections.push(c); c.send({ type: 'JOIN', name: myName, avatar: AVATAR_SEEDS[myAvatarIdx] }); });
+            c.on('data', handleData);
         }
 
         function handleData(data, conn) {
@@ -774,14 +502,16 @@
                 sync(); 
             }
             if (data.type === 'SYNC') { gameState = data.state; updateUI(); }
-            if (data.type === 'SUBMIT') { const p = gameState.players[conn.peer]; p.ready = true; p.lastChoice = data.choice; checkAllReady(); }
+            if (data.type === 'SUBMIT') { const p = gameState.players[conn.peer]; if(p) { p.ready = true; p.lastChoice = data.choice; checkAllReady(); } }
             if (data.type === 'BET') { gameState.bets[conn.peer] = { type: data.betType, val: data.val }; sync(); }
             if (data.type === 'POWERUP') {
                 const p = gameState.powerups[conn.peer];
-                if (data.pu === '5050') p.used['5050'] = true;
-                if (data.pu === 'double') p.used['double'] = true;
-                if (data.pu === 'shield') { p.used['shield'] = true; p.activeShield = true; }
-                sync();
+                if(p) {
+                    if (data.pu === '5050') p.used['5050'] = true;
+                    if (data.pu === 'double') p.used['double'] = true;
+                    if (data.pu === 'shield') { p.used['shield'] = true; p.activeShield = true; }
+                    sync();
+                }
             }
             if (data.type === 'REACTION') triggerEmoji(data.from, data.emoji);
         }
@@ -801,27 +531,14 @@
                         isCorrect = pInput === q.correct_answer.toUpperCase();
                     }
                     
-                    const pu = gameState.powerups[id];
+                    const pu = gameState.powerups[id] || { used: { double: false }, activeShield: false };
                     let multiplier = pu.used.double ? 2 : 1;
-                    
                     const bet = gameState.bets[id] || { type: 'points', val: 0 };
                     let basePoints = isCorrect ? 100 : 0;
-                    
-                    // Betting Logic
-                    if (bet.type === 'points') {
-                        basePoints = isCorrect ? (100 + bet.val) : -bet.val;
-                    }
-
-                    p.lastPoints = basePoints * multiplier;
-                    p.score += p.lastPoints;
-                    
-                    // Sauf-Logic with Shield
-                    const needsToSip = !isCorrect && !pu.activeShield;
+                    if (bet.type === 'points') { basePoints = isCorrect ? (100 + bet.val) : -bet.val; }
+                    p.lastPoints = basePoints * multiplier; p.score += p.lastPoints;
                     p.tally.push(isCorrect ? 'green' : (pu.activeShield ? 'shield' : 'red'));
-                    
                     if (isCorrect) roundsCorrect++;
-                    
-                    // Reset active shield after use/round
                     pu.activeShield = false;
                 });
                 gameState.saufText = roundsCorrect === 0 ? "TOTALAUSFALL! Alle bechern!" : (roundsCorrect === 1 ? "STREBER! Rest trinkt!" : "Puh, Safe.");
@@ -829,13 +546,6 @@
                 gameState.showResolution = true;
             }
             sync();
-        }
-
-        function submitChoice(val) {
-            if (isHost) handleData({ type: 'SUBMIT', choice: val }, { peer: myId });
-            else connections[0].send({ type: 'SUBMIT', choice: val });
-            const all = document.querySelectorAll('.paper-note');
-            all.forEach(b => { b.disabled = true; if (b.innerHTML === val) b.classList.add('active-choice'); else { b.style.opacity = "0.3"; b.style.filter = "grayscale(100%)"; } });
         }
 
         function sync() { if (!isHost) return; updateUI(); connections.forEach(c => c.send({ type: 'SYNC', state: gameState })); }
@@ -863,7 +573,6 @@
                                 <p class="text-3xl font-black uppercase tracking-tighter text-white drop-shadow-md">${p.name} ${id === leaderId && p.score > 0 ? '👑' : ''}</p>
                                 <p class="text-3xl font-black text-orange-500 drop-shadow-md">${p.score}</p>
                             </div>
-                            <!-- Tally marks -->
                             <div class="tally-box">
                                 ${Array.from({ length: Math.ceil((p.tally || []).length / 5) }).map((_, i) => `
                                     <div class="tally-group">
@@ -882,68 +591,77 @@
             if (gameState.status === 'RESULTS') renderFinal();
         }
 
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+        }
+
+        async function generateCustomQuestions() {
+            const custom = [];
+            const geoSources = [
+                async () => {
+                    try {
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,capitalInfo,latlng");
+                        const data = (await res.json()).filter(c => c.capitalInfo && c.capitalInfo.latlng);
+                        const c1 = data[Math.floor(Math.random() * data.length)]; const c2 = data[Math.floor(Math.random() * data.length)];
+                        const dist = calculateDistance(c1.latlng[0], c1.latlng[1], c2.latlng[0], c2.latlng[1]);
+                        return { mode: 'MC', question: `GEOGRAPHIE: Wie viele km Luftlinie liegen zwischen <span class="text-orange-400 font-black">${c1.name.common}</span> und <span class="text-yellow-400 font-black">${c2.name.common}</span>?`, correct_answer: `${dist} km`, incorrect_answers: [`${Math.round(dist * 0.5)} km`, `${Math.round(dist * 1.5)} km`, `${Math.round(dist * 0.8)} km`] };
+                    } catch (e) { return { mode: 'MC', question: "Fehler", correct_answer: "?", incorrect_answers: ["?"] }; }
+                },
+                async () => {
+                    try {
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
+                        const data = (await res.json()); const target = data[Math.floor(Math.random() * data.length)];
+                        return { mode: 'IMG', image: `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${target.cca2.toLowerCase()}/vector.svg`, question: "WELCHES LAND IST DAS?", correct_answer: target.name.common, incorrect_answers: [data[0].name.common, data[1].name.common, data[2].name.common] };
+                    } catch (e) { return { mode: 'MC', question: "Fehler", correct_answer: "?", incorrect_answers: ["?"] }; }
+                }
+            ];
+            for (let i = 0; i < 5; i++) custom.push(await geoSources[i % geoSources.length]());
+            return custom;
+        }
+
         async function initiateQuiz() {
-            gameState.questions = [];
-            gameState.isLoading = true; sync(); 
+            gameState.questions = []; gameState.isLoading = true; sync(); 
             const count = parseInt(document.getElementById('cfg-count').value);
             const diff = document.getElementById('cfg-diff').value;
-            
             try {
-                // Multi-category support
                 const catsToFetch = selectedCats.includes(9) ? [9] : selectedCats;
                 const perCat = Math.ceil(count / catsToFetch.length);
-                
                 for(let cat of catsToFetch) {
-                    const catUrl = cat === 9 ? '' : `&category=${cat}`;
-                    const res = await fetch(`https://opentdb.com/api.php?amount=${perCat}${catUrl}&difficulty=${diff}&type=multiple`);
+                    const res = await fetch(`https://opentdb.com/api.php?amount=${perCat}${cat === 9 ? '' : '&category='+cat}&difficulty=${diff}&type=multiple`);
                     const data = await res.json();
                     if(data.results) {
                         for (let q of data.results) {
-                            gameState.questions.push({
-                                mode: 'MC', 
-                                question: `WISSENS-CHECK: ${await translateText(q.question)}`,
-                                correct_answer: await translateText(q.correct_answer),
-                                incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a)))
-                            });
+                            gameState.questions.push({ mode: 'MC', question: `WISSENS-CHECK: ${await translateText(q.question)}`, correct_answer: await translateText(q.correct_answer), incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a))) });
                         }
                     }
                 }
-                
                 gameState.questions.push(...await generateCustomQuestions());
-                // Shuffle everything
-                gameState.questions.sort(() => Math.random() - 0.5);
-                // Respect the count
-                gameState.questions = gameState.questions.slice(0, count);
-                
+                gameState.questions.sort(() => Math.random() - 0.5); gameState.questions = gameState.questions.slice(0, count);
                 gameState.status = 'PLAYING'; gameState.currentIndex = 0; gameState.isLoading = false; resetReadiness(); sync();
-            } catch (e) { gameState.isLoading = false; sync(); alert("API Fehler! Bitte Seite neu laden."); }
+            } catch (e) { gameState.isLoading = false; sync(); alert("API Fehler!"); }
         }
-
 
         function renderArena() {
             document.getElementById('screen-lobby').classList.add('hidden'); document.getElementById('screen-quiz').classList.remove('hidden');
             const q = gameState.questions[gameState.currentIndex];
             document.getElementById('quiz-progress').innerText = `FRAGE ${gameState.currentIndex + 1} / ${gameState.questions.length}`;
             document.getElementById('question-text').innerHTML = q.question;
-            const areas = ['mc-area', 'image-container', 'ghost-area']; areas.forEach(a => document.getElementById(a).classList.add('hidden'));
+            const areas = ['mc-area', 'image-container']; areas.forEach(a => document.getElementById(a)?.classList.add('hidden'));
 
             if (gameState.showResolution) {
                 const res = document.getElementById('resolution'); res.classList.remove('hidden'); const p = gameState.players[myId];
                 document.getElementById('personal-feedback').innerHTML = p.lastPoints > 0 ? '<span class="text-green-500 text-4xl font-black">RICHTIG! ✅</span>' : `<span class="text-red-500 text-4xl font-black">DANEBEN! ❌</span>`;
-                document.getElementById('correct-text').innerHTML = q.correct_answer;
+                document.getElementById('correct-text').innerHTML = Array.isArray(q.correct_answer) ? q.correct_answer[0] : q.correct_answer;
                 document.getElementById('sauf-text').innerHTML = `<span class="text-3xl">${gameState.saufText}</span>`;
                 if (isHost) document.getElementById('host-next').classList.remove('hidden');
             } else {
                 document.getElementById('resolution').classList.add('hidden');
-                
-                // Betting UI
-                const currentBet = gameState.bets[myId] || { val: 0 };
-                const pu = gameState.powerups[myId] || { used: { 5050: false, double: false, shield: false }, activeShield: false };
-                
+                const pu = gameState.powerups[myId] || { used: {} }; const currentBet = gameState.bets[myId] || { val: 0 };
                 const sidebarInject = `
                     <div class="flex flex-col gap-4 mb-8 bg-black/40 p-6 rounded-2xl border-2 border-white/10">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold uppercase tracking-widest text-orange-500">Dein Einsatz:</span>
+                        <div class="flex justify-between items-center"><span class="text-xs font-bold uppercase text-orange-500">Einsatz:</span>
                             <div class="flex gap-2">
                                 <button onclick="setBet(0)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 0 ? 'bg-orange-500' : ''}">0</button>
                                 <button onclick="setBet(50)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 50 ? 'bg-orange-500' : ''}">50</button>
@@ -951,96 +669,35 @@
                             </div>
                         </div>
                         <div class="flex justify-between items-center border-t border-white/5 pt-4">
-                            <span class="text-xs font-bold uppercase tracking-widest text-cyan-400">Power-Ups:</span>
+                            <span class="text-xs font-bold uppercase text-cyan-400">Power-Ups:</span>
                             <div class="flex gap-4">
-                                <button onclick="usePU('5050')" class="powerup-btn ${!pu.used['5050'] ? 'active' : 'used'}" title="50:50">🌓</button>
-                                <button onclick="usePU('double')" class="powerup-btn ${!pu.used['double'] ? 'active' : 'used'}" title="Doppel-Wumms">🚀</button>
-                                <button onclick="usePU('shield')" class="powerup-btn ${!pu.used['shield'] ? 'active' : 'used'}" title="Sauf-Schild">🛡️</button>
+                                <button onclick="usePU('5050')" class="powerup-btn ${!pu.used['5050'] ? 'active' : 'used'}">🌓</button>
+                                <button onclick="usePU('double')" class="powerup-btn ${!pu.used['double'] ? 'active' : 'used'}">🚀</button>
+                                <button onclick="usePU('shield')" class="powerup-btn ${!pu.used['shield'] ? 'active' : 'used'}">🛡️</button>
                             </div>
                         </div>
-                    </div>
-                `;
-
-                if (q.mode === 'IMG') { 
-                    document.getElementById('image-container').classList.remove('hidden'); 
-                    document.getElementById('question-image').src = proxify(q.image); 
-                    renderMC(q); 
-                } else { 
-                    renderMC(q); 
-                }
-                
-                // Inject Betting/PU UI if not already present
-                if(!document.getElementById('game-tools')) {
-                    const tools = document.createElement('div');
-                    tools.id = 'game-tools';
-                    document.getElementById('screen-quiz').insertBefore(tools, document.getElementById('screen-quiz').firstChild);
-                }
+                    </div>`;
+                if(!document.getElementById('game-tools')) { const tools = document.createElement('div'); tools.id = 'game-tools'; document.getElementById('screen-quiz').insertBefore(tools, document.getElementById('screen-quiz').firstChild); }
                 document.getElementById('game-tools').innerHTML = sidebarInject;
+                if (q.mode === 'IMG') { document.getElementById('image-container').classList.remove('hidden'); document.getElementById('question-image').src = proxify(q.image); renderMC(q); }
+                else { renderMC(q); }
             }
         }
 
-        function setBet(v) {
-            if(isHost) handleData({ type: 'BET', val: v, betType: 'points' }, { peer: myId });
-            else connections[0].send({ type: 'BET', val: v, betType: 'points' });
-        }
-
-        function usePU(type) {
-            const pu = gameState.powerups[myId];
-            if(pu.used[type]) return;
-            if(isHost) handleData({ type: 'POWERUP', pu: type }, { peer: myId });
-            else connections[0].send({ type: 'POWERUP', pu: type });
-            
-            if(type === '5050') {
-                const buttons = Array.from(document.querySelectorAll('.paper-note'));
-                const q = gameState.questions[gameState.currentIndex];
-                const wrong = buttons.filter(b => b.innerHTML !== q.correct_answer);
-                wrong.sort(() => Math.random() - 0.5).slice(0, 2).forEach(b => b.style.display = 'none');
-            }
-        }
-
-        function renderMC(q) {
-            const mc = document.getElementById('mc-area'); mc.classList.remove('hidden');
-            if (mc.dataset.rd != gameState.currentIndex) {
-                mc.dataset.rd = gameState.currentIndex; mc.innerHTML = '';
-                [...(q.incorrect_answers || []), q.correct_answer].sort(() => Math.random() - 0.5).forEach(o => {
-                    const b = document.createElement('button'); b.className = "paper-note cursor-pointer";
-                    b.style.setProperty('--rotation', `${Math.random() * 6 - 3}deg`); b.innerHTML = o; b.onclick = () => submitChoice(o); mc.appendChild(b);
-                });
-            }
-        }
-
-
-        function triggerEmoji(from, emoji) {
-            const ov = document.getElementById('emoji-display'); document.getElementById('emoji-sender').innerText = "FROM: " + from; document.getElementById('emoji-icon').innerText = emoji;
-            ov.classList.add('opacity-100'); setTimeout(() => ov.classList.remove('opacity-100'), 1500);
-        }
-
+        function setBet(v) { if(isHost) handleData({ type: 'BET', val: v, betType: 'points' }, { peer: myId }); else connections[0].send({ type: 'BET', val: v, betType: 'points' }); }
+        function usePU(type) { if(gameState.powerups[myId].used[type]) return; if(isHost) handleData({ type: 'POWERUP', pu: type }, { peer: myId }); else connections[0].send({ type: 'POWERUP', pu: type }); if(type === '5050') { const buttons = Array.from(document.querySelectorAll('.paper-note')); const q = gameState.questions[gameState.currentIndex]; buttons.filter(b => b.innerHTML !== q.correct_answer).sort(() => Math.random() - 0.5).slice(0, 2).forEach(b => b.style.display = 'none'); } }
+        function renderMC(q) { const mc = document.getElementById('mc-area'); mc.classList.remove('hidden'); if (mc.dataset.rd != gameState.currentIndex) { mc.dataset.rd = gameState.currentIndex; mc.innerHTML = ''; [...(q.incorrect_answers || []), q.correct_answer].sort(() => Math.random() - 0.5).forEach(o => { const b = document.createElement('button'); b.className = "paper-note cursor-pointer"; b.style.setProperty('--rotation', `${Math.random() * 6 - 3}deg`); b.innerHTML = o; b.onclick = () => submitChoice(o); mc.appendChild(b); }); } }
+        function triggerEmoji(from, emoji) { const ov = document.getElementById('emoji-display'); document.getElementById('emoji-sender').innerText = "FROM: " + from; document.getElementById('emoji-icon').innerText = emoji; ov.classList.add('opacity-100'); setTimeout(() => ov.classList.remove('opacity-100'), 1500); }
+        function sendEmoji(e) { if (isHost) handleData({ type: 'REACTION', from: myName, emoji: e }, { peer: myId }); connections.forEach(c => c.send({ type: 'REACTION', from: myName, emoji: e })); if (!isHost) triggerEmoji(myName, e); }
         function nextRound() { gameState.currentIndex++; if (gameState.currentIndex >= gameState.questions.length) gameState.status = 'RESULTS'; else resetReadiness(); sync(); }
-        function resetReadiness() { 
-            gameState.showResolution = false; 
-            gameState.bets = {};
-            Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); 
-        }
-
+        function resetReadiness() { gameState.showResolution = false; gameState.bets = {}; Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); }
         function renderFinal() {
             document.getElementById('screen-quiz').classList.add('hidden'); document.getElementById('screen-results').classList.remove('hidden');
-            document.getElementById('podium').innerHTML = Object.values(gameState.players).sort((a, b) => b.score - a.score).map((p, i) => `
-            <div class="flex justify-between chalk-card p-4 rounded-xl mb-2"><span class="text-xl">#${i + 1} ${p.name}</span><span class="text-xl text-yellow-500">${p.score}</span></div>`).join('');
-            document.getElementById('summary-table').innerHTML = gameState.history.map((h, i) => `
-            <div class="border-b-2 border-slate-400 pb-4 mb-4 text-left">
-                <p class="font-black text-xl uppercase text-slate-800">Q${i + 1}: ${h.q}</p>
-                <div class="flex flex-wrap gap-3 mt-3">
-                    ${Object.entries(h.players).map(([id, p]) => { 
-                        const isCorrect = p.lastPoints > 0; 
-                        return `<span class="text-sm px-3 py-1 rounded-lg border-2 font-bold ${isCorrect ? 'bg-green-100 text-green-800 border-green-400' : 'bg-red-100 text-red-800 border-red-400'}">${p.name}: ${p.lastChoice || '-'}</span>`; 
-                    }).join('')}
-                </div>
-            </div>`).join('');
+            document.getElementById('podium').innerHTML = Object.values(gameState.players).sort((a, b) => b.score - a.score).map((p, i) => `<div class="flex justify-between chalk-card p-4 rounded-xl mb-2"><span class="text-xl">#${i + 1} ${p.name}</span><span class="text-xl text-yellow-500">${p.score}</span></div>`).join('');
+            document.getElementById('summary-table').innerHTML = gameState.history.map((h, i) => `<div class="border-b-2 border-slate-400 pb-4 mb-4 text-left font-black text-xl uppercase text-slate-800">Q${i + 1}: ${h.q}</div>`).join('');
             confetti({ particleCount: 1000, spread: 120, origin: { y: 0.6 } });
         }
-
         init();
     </script>
 </body>
-
 </html>
