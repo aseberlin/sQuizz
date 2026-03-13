@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Arvo:wght@400;700&family=VT323&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Arvo:wght@400;700&family=VT323&family=Outfit:wght@300;400;700;900&display=swap"
         rel="stylesheet">
     <style>
         :root {
@@ -123,7 +123,121 @@
             transform: scale(1.2) rotate(0deg) !important;
         }
 
-        /* UI */
+        body.theme-urban {
+            background-color: #1a1a1a;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theme-urban .chalk-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+            border-radius: 0;
+        }
+
+        .theme-urban .paper-note {
+            background: #262626;
+            color: #00f2ff;
+            border: 1px solid #00f2ff;
+            clip-path: none;
+            transform: none !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+        }
+
+        .theme-urban .paper-note.active-choice {
+            background: #00f2ff !important;
+            color: #000 !important;
+            box-shadow: 0 0 30px #00f2ff !important;
+            transform: scale(1.05) !important;
+        }
+
+        .theme-urban h1 {
+            color: #fefe00;
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+        }
+
+        .theme-urban .turf-track {
+            background: #111;
+            border: 2px solid #333;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 49px, #444 50px);
+        }
+
+        body.theme-solaris {
+            background-color: #050505;
+            background-image:
+                radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050505 100%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
+            color: #f1f5f9;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .theme-solaris .chalk-card {
+            background: rgba(15, 10, 25, 0.4);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
+            border-radius: 24px;
+        }
+
+        .theme-solaris .paper-note {
+            background: rgba(255, 255, 255, 0.03);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            clip-path: none;
+            transform: none !important;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0.02em;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 12px;
+            font-size: 1.1rem;
+        }
+
+        .theme-solaris .paper-note.active-choice {
+            background: #d4af37 !important;
+            color: #000 !important;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4) !important;
+            transform: translateY(-5px) !important;
+            border-color: #fff !important;
+        }
+
+        .theme-solaris h1 {
+            color: #d4af37;
+            background: linear-gradient(135deg, #fff 0%, #d4af37 50%, #8a6d3b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+        }
+
+        .theme-solaris .turf-track {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            background-image:
+                linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+            background-size: 50px 100%;
+        }
+
+        .theme-solaris .race-horse img {
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
         .marker {
             font-family: 'Permanent Marker', cursive;
         }
@@ -301,9 +415,8 @@
 
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <select id="cfg-count" class="bg-black border border-white/10 rounded-lg p-3 text-white">
-                        <option value="5">5 FRAGEN</option>
-                        <option value="10" selected>10 FRAGEN</option>
-                        <option value="20">20 FRAGEN</option>
+                        <option value="3">3 FRAGEN</option>
+                        <option value="5" selected>5 FRAGEN</option>
                     </select>
                     <select id="cfg-diff"
                         class="bg-black border border-white/10 rounded-lg p-3 text-orange-500 font-bold uppercase">
@@ -362,7 +475,11 @@
 
     <aside class="w-full lg:w-1/3 bg-black/40 p-6 flex flex-col border-t lg:border-t-0 lg:border-l border-white/5">
         <div class="mb-8 p-4 chalk-card rounded-xl">
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="setTheme('theme-solaris')"
+                    class="bg-zinc-900 py-2 rounded text-[10px] font-bold uppercase border border-amber-500 text-amber-500 col-span-2">Solaris</button>
+                <button onclick="setTheme('theme-urban')"
+                    class="bg-zinc-700 py-2 rounded text-[10px] font-bold uppercase border border-cyan-400">Urban</button>
                 <button onclick="setTheme('theme-normal')"
                     class="bg-zinc-800 py-2 rounded text-[10px] font-bold uppercase">Pub</button>
                 <button onclick="setTheme('theme-c64')"
@@ -400,7 +517,7 @@
         let selectedCats = [9];
 
         function setTheme(theme) { document.body.className = theme + ' min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700'; localStorage.setItem('jizzquiz_theme', theme); }
-        setTheme(localStorage.getItem('jizzquiz_theme') || 'theme-normal');
+        setTheme(localStorage.getItem('jizzquiz_theme') || 'theme-solaris');
 
         function proxify(url) { return url ? `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=500&output=png` : ''; }
 
@@ -529,12 +646,13 @@
             connections.forEach(c => c.send({ type: 'BOOT_START' })); await runGlobalBootSequence();
             gameState.isLoading = true; sync(); await typeBoot();
             const count = parseInt(document.getElementById('cfg-count').value);
+            const triviaAmount = Math.max(0, count - 2); // Reservoir for Special (Football/Ghost)
             const diff = document.getElementById('cfg-diff').value;
             const targetCat = selectedCats[Math.floor(Math.random() * selectedCats.length)];
             const catUrl = targetCat === 9 ? '' : `&category=${targetCat}`;
 
             try {
-                const res = await fetch(`https://opentdb.com/api.php?amount=${count}${catUrl}&difficulty=${diff}&type=multiple`);
+                const res = await fetch(`https://opentdb.com/api.php?amount=${triviaAmount}${catUrl}&difficulty=${diff}&type=multiple`);
                 const data = await res.json();
                 gameState.questions = [];
                 for (let q of data.results) {
