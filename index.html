@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JizzQuiz - Geo Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Arvo:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root { --pub-wood: #1a0f08; --pub-accent: #b45309; }
+        body.theme-normal { background-color: var(--pub-wood); background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png'); color: #d1d5db; font-family: 'Arvo', serif; }
+        .chalk-card { background: #1e293b; border: 4px solid #334155; box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5); }
+        .paper-note { background: #fffef0; color: #1a1a1a; padding: 20px; border-radius: 4px; cursor: pointer; transition: 0.2s; font-weight: bold; text-align: center; }
+        .active-choice { background: #ffec99 !important; border: 3px solid #b45309 !important; transform: scale(1.05); }
+        .marker { font-family: 'Permanent Marker', cursive; }
+        #map { height: 400px; border: 4px solid white; border-radius: 12px; margin-bottom: 20px; }
+        .tally-mark { width: 4px; height: 16px; border-radius: 2px; display: inline-block; margin-right: 2px; }
+        .tally-green { background: #22c55e; }
+        .tally-red { background: #ef4444; }
+    </style>
+</head>
+
+<body class="theme-normal min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
+
+    <main class="w-full lg:w-2/3 p-4 lg:p-8 flex flex-col items-center">
+        <header class="text-center mb-6">
+            <h1 class="text-6xl marker text-orange-800 drop-shadow-lg italic">JizzQuiz</h1>
+            <p class="text-[9px] uppercase tracking-[0.5em] opacity-40 italic">Geo-Logic v2.6</p>
+        </header>
+
+        <div id="screen-lobby" class="w-full max-w-md space-y-6">
+            <div class="chalk-card p-8 rounded-xl">
+                <input type="text" id="username" placeholder="Dein Name..." class="w-full bg-black/40 p-4 rounded-lg border border-white/10 text-2xl mb-6 text-center text-white">
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="startHost()" class="bg-orange-800 text-white py-4 rounded-xl font-bold uppercase">Host</button>
+                    <button onclick="document.getElementById('join-box').classList.toggle('hidden')" class="bg-zinc-800 py-4 rounded-xl font-bold uppercase text-white">Join</button>
+                </div>
+                <div id="join-box" class="hidden mt-6 pt-6 border-t border-white/10 space-y-4">
+                    <input type="text" id="join-id" placeholder="Raum-Code..." class="w-full bg-black/20 p-3 rounded-xl border border-gray-700 text-center text-white font-mono">
+                    <button onclick="joinGame()" class="w-full bg-emerald-800 py-3 rounded-xl font-bold uppercase text-white">Verbinden</button>
+                </div>
+            </div>
+
+            <div id="host-config" class="hidden chalk-card p-8 rounded-xl text-center">
+                <p class="text-white mb-2">Raum-Code (Klicken zum Kopieren):</p>
+                <div onclick="navigator.clipboard.writeText(myId)" class="bg-black/20 p-4 rounded-xl mb-6 cursor-pointer border border-white/10 text-orange-500 text-4xl font-mono font-bold">
+                    <span id="display-id">...</span>
+                </div>
+                <button onclick="initiateQuiz()" class="bg-orange-800 w-full py-6 rounded-2xl text-3xl font-black uppercase italic text-white">START!</button>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="hidden w-full max-w-4xl">
+            <div id="quiz-progress" class="marker text-orange-600 text-3xl italic mb-6 text-center">...</div>
+            
+            <div class="text-center">
+                <h2 id="question-text" class="text-3xl lg:text-5xl font-bold mb-12 text-white leading-tight">...</h2>
+                
+                <div id="mc-area" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+
+                <div id="map-area" class="hidden w-full max-w-3xl mx-auto">
+                    <div id="map"></div>
+                    <button id="map-submit-btn" onclick="submitMapGuess()" class="bg-orange-800 px-10 py-4 rounded-xl font-black uppercase text-xl text-white">Tipp bestätigen</button>
+                </div>
+            </div>
+
+            <div id="resolution" class="hidden mt-10 p-10 chalk-card rounded-[2rem] text-center">
+                <p id="personal-feedback" class="text-2xl font-bold mb-4 uppercase"></p>
+                <h3 id="correct-text" class="text-4xl lg:text-6xl font-black text-white mb-8 italic underline decoration-orange-700"></h3>
+                <p id="sauf-text" class="text-xl text-yellow-500 font-bold mb-10 italic"></p>
+                <button id="host-next" onclick="nextRound()" class="hidden bg-white text-black px-16 py-4 rounded-xl font-black text-xl uppercase mx-auto">Nächste Runde ➔</button>
+            </div>
+        </div>
+    </main>
+
+    <aside class="w-full lg:w-1/3 bg-black/40 p-6 flex flex-col border-l border-white/5">
+        <h3 class="text-lg font-black uppercase text-orange-800 mb-6 text-center tracking-widest italic">Stammtisch</h3>
+        <div id="player-list" class="space-y-4"></div>
+    </aside>
+
+    <script>
+        let peer, myId, myName, connections = [], isHost = false;
+        let gameState = { players: {}, questions: [], currentIndex: 0, status: 'LOBBY', showResolution: false };
+        
+        // Map Variablen
+        let map, mapMarker = null, mapGuess = null;
+
+        const GEO_POOL = [
+            {mode:"MAP", question:"WO LIEGT PARIS?", lat:48.8566, lng:2.3522},
+            {mode:"MAP", question:"WO LIEGT NEW YORK?", lat:40.7128, lng:-74.0060},
+            {mode:"MAP", question:"WO LIEGT TOKIO?", lat:35.6762, lng:139.6503},
+            {mode:"MAP", question:"WO LIEGT SYDNEY?", lat:-33.8688, lng:151.2093},
+            {mode:"MAP", question:"WO LIEGT BERLIN?", lat:52.5200, lng:13.4050}
+        ];
+
+        function init() {
+            peer = new Peer();
+            peer.on('open', id => { myId = id; document.getElementById('display-id').innerText = id; });
+            peer.on('connection', c => {
+                c.on('open', () => {
+                    connections.push(c);
+                    c.on('data', d => handleData(d, c));
+                });
+            });
+        }
+
+        function startHost() {
+            myName = document.getElementById('username').value || "Host"; isHost = true;
+            document.getElementById('host-config').classList.remove('hidden');
+            gameState.players[myId] = { name: myName, score: 0, ready: false, tally: [] };
+            updateUI();
+        }
+
+        function joinGame() {
+            myName = document.getElementById('username').value || "Gast";
+            const hId = document.getElementById('join-id').value;
+            const c = peer.connect(hId);
+            c.on('open', () => {
+                connections.push(c);
+                c.send({ type: 'JOIN', name: myName });
+            });
+            c.on('data', handleData);
+        }
+
+        function handleData(data, conn) {
+            if (data.type === 'JOIN') {
+                gameState.players[conn.peer] = { name: data.name, score: 0, ready: false, tally: [] };
+                sync();
+            }
+            if (data.type === 'SYNC') { gameState = data.state; updateUI(); }
+            if (data.type === 'SUBMIT') {
+                gameState.players[conn.peer].ready = true;
+                gameState.players[conn.peer].lastChoice = data.choice;
+                checkAllReady();
+            }
+        }
+
+        function sync() { if (isHost) connections.forEach(c => c.send({ type: 'SYNC', state: gameState })); updateUI(); }
+
+        function initiateQuiz() {
+            // Fragen laden & Map-Frage reinmischen
+            gameState.questions = [
+                { mode: 'MC', question: "Was ist die Hauptstadt von Frankreich?", correct_answer: "Paris", incorrect_answers: ["Lyon", "Marseille", "Bordeaux"] }
+            ];
+            gameState.questions.push(GEO_POOL[Math.floor(Math.random() * GEO_POOL.length)]);
+            gameState.status = 'PLAYING';
+            sync();
+        }
+
+        function initMapGame() {
+            if (!window.google) return;
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 2, center: { lat: 20, lng: 0 },
+                disableDefaultUI: true,
+                styles: [{ "stylers": [{ "saturation": -100 }] }]
+            });
+            map.addListener("click", (e) => {
+                mapGuess = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+                if (mapMarker) mapMarker.setMap(null);
+                mapMarker = new google.maps.Marker({ position: e.latLng, map: map });
+            });
+            // Fix für graue Karten beim Laden
+            google.maps.event.trigger(map, "resize");
+        }
+
+        function submitMapGuess() {
+            if (!mapGuess) return;
+            submitChoice(JSON.stringify(mapGuess));
+        }
+
+        function submitChoice(val) {
+            if (isHost) handleData({ type: 'SUBMIT', choice: val }, { peer: myId });
+            else connections[0].send({ type: 'SUBMIT', choice: val });
+        }
+
+        function geoDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        function checkAllReady() {
+            const all = Object.values(gameState.players);
+            if (all.every(p => p.ready)) {
+                const q = gameState.questions[gameState.currentIndex];
+                all.forEach(p => {
+                    let isCorrect = false;
+                    let points = 0;
+                    if (q.mode === "MAP") {
+                        const guess = JSON.parse(p.lastChoice);
+                        const dist = geoDistance(guess.lat, guess.lng, q.lat, q.lng);
+                        points = Math.max(0, Math.round(1000 - dist));
+                        isCorrect = dist < 200;
+                    } else {
+                        isCorrect = p.lastChoice === q.correct_answer;
+                        points = isCorrect ? 100 : 0;
+                    }
+                    p.score += points;
+                    p.lastPoints = points;
+                    p.tally.push(isCorrect ? 'green' : 'red');
+                });
+                gameState.showResolution = true;
+                sync();
+            }
+        }
+
+        function nextRound() {
+            gameState.currentIndex++;
+            gameState.showResolution = false;
+            Object.values(gameState.players).forEach(p => p.ready = false);
+            if (gameState.currentIndex >= gameState.questions.length) gameState.status = 'LOBBY';
+            sync();
+        }
+
+        function updateUI() {
+            if (gameState.status === 'PLAYING') {
+                document.getElementById('screen-lobby').classList.add('hidden');
+                document.getElementById('screen-quiz').classList.remove('hidden');
+                renderArena();
+            }
+            document.getElementById('player-list').innerHTML = Object.values(gameState.players).map(p => `
+                <div class="p-4 chalk-card rounded-xl border-l-8 ${p.ready ? 'border-green-500' : 'border-zinc-700'}">
+                    <p class="text-white font-bold">${p.name}</p>
+                    <p class="text-orange-500 font-black">${p.score} Pkt.</p>
+                    <div class="mt-1">${p.tally.map(t => `<div class="tally-mark tally-${t}"></div>`).join('')}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderArena() {
+            const q = gameState.questions[gameState.currentIndex];
+            document.getElementById('quiz-progress').innerText = `FRAGE ${gameState.currentIndex + 1}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            const res = document.getElementById('resolution');
+            const mcArea = document.getElementById('mc-area');
+            const mapArea = document.getElementById('map-area');
+
+            if (gameState.showResolution) {
+                res.classList.remove('hidden');
+                mcArea.classList.add('hidden');
+                mapArea.classList.add('hidden');
+                document.getElementById('correct-text').innerText = q.mode === "MAP" ? "Lösung angezeigt!" : q.correct_answer;
+                document.getElementById('personal-feedback').innerText = gameState.players[myId].lastPoints + " PUNKTE!";
+                if (isHost) document.getElementById('host-next').classList.remove('hidden');
+            } else {
+                res.classList.add('hidden');
+                if (q.mode === "MAP") {
+                    mcArea.classList.add('hidden');
+                    mapArea.classList.remove('hidden');
+                    setTimeout(initMapGame, 200);
+                } else {
+                    mapArea.classList.add('hidden');
+                    mcArea.classList.remove('hidden');
+                    mcArea.innerHTML = [...q.incorrect_answers, q.correct_answer].sort().map(o => `
+                        <button onclick="submitChoice('${o}')" class="paper-note">${o}</button>
+                    `).join('');
+                }
+            }
+        }
+
+        init();
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSKcwScbhFKZy_KWZIPouJZ7m4oarNPHY"></script>
+</body>
+</html>
