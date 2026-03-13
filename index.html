@@ -515,7 +515,7 @@
             <div class="text-center px-4">
                 <div id="image-container" class="mb-8 hidden flex justify-center">
                     <img id="question-image" referrerpolicy="no-referrer"
-                        class="mx-auto rounded-xl border-4 border-white shadow-2xl max-h-52 bg-white p-2 object-contain"
+                        class="mx-auto rounded-xl border-4 border-white shadow-2xl bg-white p-2 object-contain"
                         src="">
                 </div>
                 <h2 id="question-text"
@@ -742,35 +742,29 @@
             peer = new Peer();
             peer.on('open', id => { myId = id; document.getElementById('display-id').innerText = id; });
             peer.on('connection', c => { 
-                c.on('open', () => { 
-                    connections.push(c); 
-                    c.on('data', d => handleData(d, c)); 
-                    c.on('close', () => { 
-                        connections = connections.filter(conn => conn !== c);
-                        // Optional: remove player from gameState if they disconnect?
-                        // For now we just keep the entry but mark as "away" if needed.
-                        console.log("Connection closed:", c.peer);
-                    });
-                }); 
+                connections.push(c); 
+                c.on('data', d => handleData(d, c)); 
+                c.on('close', () => { connections = connections.filter(conn => conn !== c); });
             });
-            peer.on('error', err => {
-                console.error("PeerJS Error:", err);
-                if(err.type === 'peer-unavailable') alert("Host nicht gefunden!");
-                else alert("Verbindungsfehler: " + err.type);
-            });
+            peer.on('error', err => console.error("PeerJS Error:", err));
         }
 
         function startHost() {
             myName = document.getElementById('username').value.trim() || "Host"; isHost = true;
             document.getElementById('host-config').classList.remove('hidden');
-            gameState.players[myId] = { name: myName, avatar: AVATAR_SEEDS[myAvatarIdx], score: 0, lastPoints: 0, ready: false, tally: [] }; sync();
+            gameState.players[myId] = { name: myName, avatar: AVATAR_SEEDS[myAvatarIdx], score: 0, lastPoints: 0, ready: false, tally: [] }; 
+            gameState.powerups[myId] = { used: { 5050: false, double: false, shield: false }, activeShield: false };
+            sync();
         }
 
         function joinGame() {
             myName = document.getElementById('username').value.trim() || "Gast";
             const hId = document.getElementById('join-id').value.trim(); const c = peer.connect(hId);
-            c.on('open', () => { connections.push(c); c.send({ type: 'JOIN', name: myName, avatar: AVATAR_SEEDS[myAvatarIdx] }); });
-            c.on('data', handleData);
+            c.on('open', () => { 
+                connections.push(c); 
+                c.send({ type: 'JOIN', name: myName, avatar: AVATAR_SEEDS[myAvatarIdx] }); 
+                c.on('data', d => handleData(d, c));
+            });
         }
 
         function handleData(data, conn) {
@@ -944,7 +938,7 @@
                 
                 // Betting UI
                 const currentBet = gameState.bets[myId] || { val: 0 };
-                const pu = gameState.powerups[myId];
+                const pu = gameState.powerups[myId] || { used: { 5050: false, double: false, shield: false }, activeShield: false };
                 
                 const sidebarInject = `
                     <div class="flex flex-col gap-4 mb-8 bg-black/40 p-6 rounded-2xl border-2 border-white/10">
