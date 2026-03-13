@@ -352,7 +352,32 @@
 </head>
 
 <body class="theme-normal min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700">
+    <div class="file-info">
+        Zuletzt geändert: <span id="formatted-date"></span>
+    </div>
 
+    <script>
+        // 1. Last-Modified String holen
+        const lastMod = document.lastModified;
+
+        // 2. In ein Datum-Objekt umwandeln
+        const dateObj = new Date(lastMod);
+
+        // 3. Formatieren für Deutschland (Tag. Monat Jahr, Uhrzeit)
+        const options = {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+
+        const formattedDate = dateObj.toLocaleDateString('de-DE', options);
+
+        // 4. In die HTML-Seite schreiben
+        document.getElementById('formatted-date').textContent = formattedDate;
+    </script>
     <div id="loading-screen" class="hidden c64-boot">
         <p>**** COMMODORE 64 BASIC V2 ****</p>
         <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
