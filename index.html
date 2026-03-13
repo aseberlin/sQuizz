@@ -416,7 +416,8 @@
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <select id="cfg-count" class="bg-black border border-white/10 rounded-lg p-3 text-white">
                         <option value="3">3 FRAGEN</option>
-                        <option value="5" selected>5 FRAGEN</option>
+                        <option value="5">5 FRAGEN</option>
+                        <option value="10" selected>10 FRAGEN</option>
                     </select>
                     <select id="cfg-diff"
                         class="bg-black border border-white/10 rounded-lg p-3 text-orange-500 font-bold uppercase">
@@ -529,6 +530,75 @@
             } catch (e) { return text; }
         }
 
+        async function generateCustomQuestions() {
+            const custom = [];
+            const sources = [
+                async () => { // 1. MATH
+                    const a = Math.floor(Math.random() * 12) + 2;
+                    const b = Math.floor(Math.random() * 15) + 5;
+                    const c = Math.floor(Math.random() * 10) + 2;
+                    let qText, answer;
+                    if (Math.random() > 0.5) { qText = `${a} * (${b} + ${c})`; answer = a * (b + c); }
+                    else { qText = `(${a} + ${b}) * ${c}`; answer = (a + b) * c; }
+                    return { mode: 'INPUT', question: `MATHE: Was ergibt ${qText}?`, correct_answer: answer.toString() };
+                },
+                async () => { // 2. JOKE (icanhazdadjoke)
+                    try {
+                        const res = await fetch("https://icanhazdadjoke.com/", { headers: { "Accept": "application/json" } });
+                        const data = await res.json();
+                        const joke = data.joke.split('?');
+                        if (joke.length < 2) throw "bad joke format";
+                        return { mode: 'INPUT', question: `WITZE-ECKE: Ergänze die Pointe:<br><span class="italic text-amber-400">"${joke[0]}?"</span>`, correct_answer: joke[1].trim() };
+                    } catch (e) { return sources[0](); } // Fallback to math
+                },
+                async () => { // 3. FLAGS (Rest Countries)
+                    try {
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,flags");
+                        const data = await res.json();
+                        const country = data[Math.floor(Math.random() * data.length)];
+                        return { mode: 'IMG', image: country.flags.png, question: "WELCHES LAND GEHÖRT ZU DIESER FLAGGE?", correct_answer: country.name.common };
+                    } catch (e) { return sources[0](); }
+                },
+                async () => { // 4. POKEMON (PokeAPI)
+                    try {
+                        const id = Math.floor(Math.random() * 151) + 1;
+                        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+                        const data = await res.json();
+                        return { mode: 'IMG', image: data.sprites.front_default, question: "POKEMON-RADAR: Wer ist das?", correct_answer: data.name };
+                    } catch (e) { return sources[0](); }
+                },
+                async () => { // 5. RICK & MORTY
+                    try {
+                        const id = Math.floor(Math.random() * 500) + 1;
+                        const res = await fetch(`https://rickandmortyapi.com/api/character/${id}`);
+                        const data = await res.json();
+                        return { mode: 'MC', question: `ZUSTANDSPRÜFUNG: Ist <span class="text-green-400">${data.name}</span> in der Serie Rick & Morty aktuell...?`, correct_answer: data.status, incorrect_answers: ["Ganz woanders", "In einer Dose", "Vergessen"] };
+                    } catch (e) { return sources[0](); }
+                },
+                async () => { // 6. NUMBERS (NumbersAPI)
+                    try {
+                        const id = Math.floor(Math.random() * 2000);
+                        const res = await fetch(`http://numbersapi.com/${id}/year?json`);
+                        const data = await res.json();
+                        return { mode: 'INPUT', question: `GESCHICHTS-CHECK: Was geschah im Jahr ${id}?<br><span class="text-[14px] leading-tight">${await translateText(data.text)}</span>`, correct_answer: id.toString() };
+                    } catch (e) { return sources[0](); }
+                },
+                async () => { // 7. URBAN SCRAMBLE
+                    const urbanWords = ["SKYLINE", "PENTHOUSE", "BETON", "WOLKENKRATZER", "METROPOLE", "STRASSENKUNST"];
+                    const word = urbanWords[Math.floor(Math.random() * urbanWords.length)];
+                    const scrambled = word.split('').sort(() => Math.random() - 0.5).join(' ');
+                    return { mode: 'INPUT', question: `STADT-RÄTSEL: Baue das Wort zusammen:<br><span class="text-amber-500 font-black tracking-widest">${scrambled}</span>`, correct_answer: word };
+                }
+            ];
+
+            // Shuffle and pick 7 unique sources (or repeat if needed)
+            const shuffled = sources.sort(() => Math.random() - 0.5);
+            for (let i = 0; i < 7; i++) {
+                custom.push(await (shuffled[i] || sources[0])());
+            }
+            return custom;
+        }
+
         // UI INIT
         const AVATAR_SEEDS = ['Abe', 'Buster', 'Clyde', 'Zack', 'Fritz', 'Hulk', 'Bier', 'Pferd'];
         const avatarGrid = document.getElementById('avatar-grid');
@@ -593,7 +663,7 @@
                 let roundsCorrect = 0;
                 all.forEach(p => {
                     const pInput = (p.lastChoice || "").toString().trim().toUpperCase();
-                    const isCorrect = (q.mode === 'GHOST') ? (pInput === q.correct_answer.split('').reverse().join('')) : (pInput === q.correct_answer.toUpperCase());
+                    const isCorrect = pInput === q.correct_answer.toUpperCase();
                     p.lastPoints = isCorrect ? 100 : 0; p.score += p.lastPoints;
                     p.tally.push(isCorrect ? 'green' : 'red');
                     if (isCorrect) roundsCorrect++;
@@ -646,13 +716,12 @@
             connections.forEach(c => c.send({ type: 'BOOT_START' })); await runGlobalBootSequence();
             gameState.isLoading = true; sync(); await typeBoot();
             const count = parseInt(document.getElementById('cfg-count').value);
-            const triviaAmount = Math.max(0, count - 2); // Reservoir for Special (Football/Ghost)
             const diff = document.getElementById('cfg-diff').value;
             const targetCat = selectedCats[Math.floor(Math.random() * selectedCats.length)];
             const catUrl = targetCat === 9 ? '' : `&category=${targetCat}`;
 
             try {
-                const res = await fetch(`https://opentdb.com/api.php?amount=${triviaAmount}${catUrl}&difficulty=${diff}&type=multiple`);
+                const res = await fetch(`https://opentdb.com/api.php?amount=3${catUrl}&difficulty=${diff}&type=multiple`);
                 const data = await res.json();
                 gameState.questions = [];
                 for (let q of data.results) {
@@ -662,18 +731,17 @@
                         incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a)))
                     });
                 }
-                gameState.questions.splice(1, 0, FOOTBALL_POOL[Math.floor(Math.random() * FOOTBALL_POOL.length)]);
-                gameState.questions.push({ mode: 'GHOST', question: "CODE MERKEN!", correct_answer: Math.floor(1000 + Math.random() * 8999).toString() });
+                gameState.questions.push(...await generateCustomQuestions());
                 gameState.status = 'PLAYING'; gameState.currentIndex = 0; gameState.isLoading = false; resetReadiness(); sync();
             } catch (e) { gameState.isLoading = false; sync(); alert("API Fehler! Bitte Seite neu laden."); }
         }
 
         async function typeBoot() {
             const cmd = document.getElementById('boot-cmd'); const status = document.getElementById('boot-status'); const text = 'LOAD "JizzQuiz", 8, 1';
-            cmd.innerHTML = ''; for (let char of text) { cmd.innerHTML += char; await new Promise(r => setTimeout(r, 60)); }
-            cmd.innerHTML += '<span class="cursor"></span>'; await new Promise(r => setTimeout(r, 400));
+            cmd.innerHTML = ''; for (let char of text) { cmd.innerHTML += char; await new Promise(r => setTimeout(r, 5)); }
+            cmd.innerHTML += '<span class="cursor"></span>'; await new Promise(r => setTimeout(r, 50));
             status.innerHTML = 'SEARCHING FOR JizzQuiz<br>LOADING<br>READY.<br>RUN<span class="cursor"></span>';
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 100));
         }
 
         async function runGlobalBootSequence() {
@@ -698,7 +766,7 @@
             } else {
                 document.getElementById('resolution').classList.add('hidden');
                 if (q.mode === 'IMG') { document.getElementById('image-container').classList.remove('hidden'); document.getElementById('question-image').src = proxify(q.image); renderMC(q); }
-                else if (q.mode === 'GHOST') { document.getElementById('ghost-area').classList.remove('hidden'); renderGhost(q); }
+                else if (q.mode === 'INPUT') { document.getElementById('ghost-area').classList.remove('hidden'); renderInput(q); }
                 else { renderMC(q); }
             }
         }
@@ -714,10 +782,9 @@
             }
         }
 
-        function renderGhost(q) {
+        function renderInput(q) {
             const gs = document.getElementById('ghost-sequence');
-            gs.innerHTML = q.correct_answer.split('').map(n => `<div class="p-4 border-2 border-orange-700 text-4xl font-bold">${n}</div>`).join('');
-            setTimeout(() => { gs.innerHTML = q.correct_answer.split('').map(() => `<div class="p-4 border-2 border-orange-700 text-4xl font-bold">?</div>`).join(''); }, 2000);
+            gs.innerHTML = '';
             document.getElementById('ghost-input').value = '';
         }
 
