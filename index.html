@@ -4,49 +4,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JizzQuiz Multiverse - Stable Edition</title>
+    <title>sQuizz - The Ultimate Pub Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Arvo:wght@400;700&family=VT323&family=Outfit:wght@300;400;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Arvo:wght@400;700&family=VT323&family=Outfit:wght@300;400;700;900&family=Pacifico&display=swap"
         rel="stylesheet">
     <style>
         :root {
             --pub-wood: #1a0f08;
-            --pub-accent: #b45309;
+            --pub-accent: #f59e0b;
             --pub-paper: #fdf6e3;
+            --neon-pink: #ff00ff;
+            --neon-blue: #00f2ff;
         }
 
         /* --- THEMES --- */
         body.theme-normal {
             background-color: var(--pub-wood);
-            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
-            color: #d1d5db;
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            color: #f8fafc;
             font-family: 'Arvo', serif;
         }
 
         .theme-normal .chalk-card {
-            background: #1e293b;
-            border: 4px solid #334155;
+            background: rgba(30, 41, 59, 0.9);
+            border: 6px solid #475569;
             background-image: url('https://www.transparenttextures.com/patterns/black-linen.png');
-            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5);
+            box-shadow: 15px 15px 30px rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
         }
 
         .theme-normal .paper-note {
             background: #fffef0;
             color: #1a1a1a;
-            border: 1px solid #d1d5db;
+            border: 2px solid #d1d5db;
             clip-path: polygon(1% 2%, 99% 1%, 97% 98%, 2% 96%);
             transform: rotate(var(--rotation));
+            font-weight: 700;
         }
 
         .theme-normal .paper-note.active-choice {
-            background: #ffec99 !important;
-            border: 3px solid #b45309 !important;
-            transform: scale(1.1) rotate(0deg) !important;
+            background: #fde047 !important;
+            border: 4px solid #b45309 !important;
+            transform: scale(1.15) rotate(0deg) !important;
             z-index: 50;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
         }
 
         body.theme-c64 {
@@ -251,27 +255,51 @@
         }
 
         .race-horse img {
-            width: 45px;
-            height: 45px;
-            border: 2px solid white;
-            border-radius: 4px;
+            width: 60px;
+            height: 60px;
+            border: 4px solid white;
+            border-radius: 50%;
             background: #000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .tally-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 8px;
+            min-height: 30px;
+        }
+
+        .tally-group {
+            display: flex;
+            position: relative;
+            padding: 0 4px;
         }
 
         .tally-mark {
-            width: 4px;
-            height: 16px;
+            width: 6px;
+            height: 28px;
             border-radius: 2px;
             display: inline-block;
-            margin-right: 2px;
+            margin-right: 3px;
         }
 
-        .tally-green {
-            background: #22c55e;
-        }
+        .tally-green { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .tally-red { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        .tally-shield { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
 
-        .tally-red {
-            background: #ef4444;
+        .tally-cross {
+            position: absolute;
+            top: 50%;
+            left: -2px;
+            width: calc(100% + 4px);
+            height: 4px;
+            background: #000;
+            transform: translateY(-50%) rotate(-45deg);
+            border-radius: 2px;
+            z-index: 5;
+            box-shadow: 0 0 5px rgba(255,255,255,0.5);
         }
 
         .c64-boot {
@@ -307,29 +335,79 @@
         }
 
         .receipt-paper {
-            background: #fff;
-            color: #000;
-            padding: 40px 20px;
-            font-family: monospace;
-            box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.6);
+            background: #f8fafc;
+            color: #0f172a;
+            padding: 40px;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: 20px 20px 60px rgba(0,0,0,0.5);
+            border-radius: 2px;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-size: 1.2rem;
             position: relative;
         }
 
         .cat-chip {
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 11px;
+            padding: 10px 18px;
+            border-radius: 99px;
+            font-size: 14px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            transition: all 0.2s;
-            background: rgba(0, 0, 0, 0.3);
         }
 
         .cat-chip.selected {
             background: var(--pub-accent);
-            border-color: white;
-            color: white;
-            transform: scale(1.05);
+            border-color: #fff;
+            box-shadow: 0 0 20px var(--pub-accent);
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        /* --- POWER-UPS --- */
+        .powerup-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+        .powerup-btn.active {
+            filter: grayscale(0);
+            opacity: 1;
+            cursor: pointer;
+            border-color: #fff;
+        }
+        .powerup-btn:not(.active) {
+            filter: grayscale(1);
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .powerup-btn.used {
+            background: #000;
+            border-color: #333;
+        }
+
+        #question-image {
+            max-height: 450px;
+            width: auto;
+            border: 8px solid white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-title {
+            font-family: 'Pacifico', cursive;
+            background: linear-gradient(45deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .animate-throw {
@@ -395,8 +473,8 @@
 
     <main class="w-full lg:w-2/3 p-4 lg:p-8 flex flex-col items-center overflow-y-auto min-h-screen">
         <header class="text-center mb-6">
-            <h1 class="text-6xl marker text-orange-800 drop-shadow-lg italic">JizzQuiz</h1>
-            <p id="room-status" class="text-[9px] uppercase tracking-[0.5em] opacity-40 italic">System V2026.Stable</p>
+            <h1 class="text-8xl marker text-orange-500 drop-shadow-2xl italic font-black">sQuizz</h1>
+            <p id="room-status" class="text-[11px] uppercase tracking-[0.6em] text-white opacity-60 italic font-bold">Premium Pub Quiz Experience</p>
         </header>
 
         <div id="race-container" class="w-full max-w-4xl mb-8 hidden">
@@ -467,13 +545,6 @@
                 <h2 id="question-text"
                     class="text-3xl lg:text-5xl font-bold mb-12 text-white leading-tight drop-shadow-lg">...</h2>
                 <div id="mc-area" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
-                <div id="ghost-area" class="hidden max-w-md mx-auto">
-                    <div id="ghost-sequence" class="flex justify-center gap-3 mb-8"></div>
-                    <input type="text" id="ghost-input"
-                        class="bg-black border-4 border-orange-800 p-6 text-4xl text-center w-full rounded-xl mb-6 uppercase">
-                    <button onclick="submitChoice(document.getElementById('ghost-input').value)"
-                        class="bg-orange-800 px-10 py-4 rounded-xl font-black uppercase text-xl">Bestätigen</button>
-                </div>
             </div>
 
             <div id="resolution"
@@ -499,8 +570,13 @@
         </div>
     </main>
 
-    <aside class="w-full lg:w-1/3 bg-black/40 p-6 flex flex-col border-t lg:border-t-0 lg:border-l border-white/5">
-        <div class="mb-8 p-4 chalk-card rounded-xl">
+    <aside class="w-full lg:w-1/3 bg-[#1e293b]/90 p-8 flex flex-col border-t lg:border-t-0 lg:border-l-8 border-orange-500/30 backdrop-blur-xl relative shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+        <!-- Decorative pub elements -->
+        <div class="absolute top-0 right-0 w-32 h-32 opacity-20 pointer-events-none transform translate-x-10 -translate-y-10">
+            <img src="https://www.transparentpng.com/download/beer-mug/beer-mug-transparent-background-5.png" class="w-full">
+        </div>
+        
+        <div class="mb-10 p-6 chalk-card rounded-2xl relative z-10">
             <div class="grid grid-cols-2 gap-2">
                 <button onclick="setTheme('theme-solaris')"
                     class="bg-zinc-900 py-2 rounded text-[10px] font-bold uppercase border border-amber-500 text-amber-500 col-span-2">Solaris</button>
@@ -514,8 +590,8 @@
                     class="bg-gradient-to-r from-purple-500 to-pink-500 py-2 rounded text-[10px] font-bold uppercase">LSD</button>
             </div>
         </div>
-        <h3 class="text-lg font-black uppercase text-orange-800 mb-2 text-center tracking-widest italic">Stammtisch</h3>
-        <p id="ready-count" class="text-center text-[10px] opacity-40 mb-6 font-mono tracking-widest">0/0 BEREIT</p>
+        <h3 class="text-4xl sidebar-title mb-6 text-center italic">Stammtisch</h3>
+        <p id="ready-count" class="text-center text-xs opacity-60 mb-8 font-mono tracking-widest uppercase">0/0 BEREIT</p>
         <div id="player-list" class="flex-grow space-y-4 overflow-y-auto pr-2 custom-scrollbar"></div>
         <div class="mt-6 pt-6 border-t border-white/10 grid grid-cols-5 gap-2">
             <button onclick="sendEmoji('🍻')" class="text-2xl hover:scale-125 transition">🍻</button>
@@ -533,93 +609,126 @@
 
     <script>
         let peer, myId, myName, myAvatarIdx = 0, connections = [], isHost = false;
-        let gameState = { players: {}, questions: [], currentIndex: 0, status: 'LOBBY', showResolution: false, history: [], isLoading: false };
+        let gameState = { 
+            players: {}, 
+            questions: [], 
+            currentIndex: 0, 
+            status: 'LOBBY', 
+            showResolution: false, 
+            history: [], 
+            isLoading: false,
+            bets: {}, // { playerId: { type: 'points'|'sips', val: number } }
+            powerups: {} // { playerId: { used: { 5050: false, double: false, shield: false }, activeShield: false } }
+        };
 
         const TRIVIA_CATS = [
             { id: 9, name: "Gemischt" }, { id: 11, name: "Film" }, { id: 12, name: "Musik" },
-            { id: 15, name: "Games" }, { id: 17, name: "Natur" }, { id: 18, name: "Computer" },
+            { id: 15, name: "Video-Games" }, { id: 17, name: "Natur" }, { id: 18, name: "Computer" },
             { id: 21, name: "Sport" }, { id: 23, name: "Historie" }, { id: 24, name: "Politik" }, { id: 26, name: "Promis" }
         ];
         let selectedCats = [9];
 
         function setTheme(theme) { document.body.className = theme + ' min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700'; localStorage.setItem('jizzquiz_theme', theme); }
-        setTheme(localStorage.getItem('jizzquiz_theme') || 'theme-solaris');
+        setTheme(localStorage.getItem('jizzquiz_theme') || 'theme-normal');
 
-        function proxify(url) { return url ? `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=500&output=png` : ''; }
+        function proxify(url) { return url ? `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=800&output=png` : ''; }
 
         async function translateText(text) {
             if (!text) return "";
             try {
                 const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=de&dt=t&q=${encodeURIComponent(text)}`);
-                const data = await res.json(); return data[0][0][0];
+                const data = await res.json(); 
+                return data[0].map(x => x[0]).join('') || text;
             } catch (e) { return text; }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return Math.round(R * c);
         }
 
         async function generateCustomQuestions() {
             const custom = [];
-            const sources = [
-                async () => { // 1. MATH
-                    const a = Math.floor(Math.random() * 12) + 2;
-                    const b = Math.floor(Math.random() * 15) + 5;
-                    const c = Math.floor(Math.random() * 10) + 2;
-                    let qText, answer;
-                    if (Math.random() > 0.5) { qText = `${a} * (${b} + ${c})`; answer = a * (b + c); }
-                    else { qText = `(${a} + ${b}) * ${c}`; answer = (a + b) * c; }
-                    return { mode: 'INPUT', question: `MATHE: Was ergibt ${qText}?`, correct_answer: answer.toString() };
-                },
-                async () => { // 2. JOKE (icanhazdadjoke)
+            const geoSources = [
+                async () => { // 1. DISTANCE DUEL
                     try {
-                        const res = await fetch("https://icanhazdadjoke.com/", { headers: { "Accept": "application/json" } });
-                        const data = await res.json();
-                        const joke = data.joke.split('?');
-                        if (joke.length < 2) throw "bad joke format";
-                        return { mode: 'INPUT', question: `WITZE-ECKE: Ergänze die Pointe:<br><span class="italic text-amber-400">"${joke[0]}?"</span>`, correct_answer: joke[1].trim() };
-                    } catch (e) { return sources[0](); } // Fallback to math
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,capitalInfo,latlng");
+                        const data = (await res.json()).filter(c => c.capitalInfo && c.capitalInfo.latlng);
+                        const c1 = data[Math.floor(Math.random() * data.length)];
+                        const c2 = data[Math.floor(Math.random() * data.length)];
+                        const dist = calculateDistance(c1.latlng[0], c1.latlng[1], c2.latlng[0], c2.latlng[1]);
+                        const others = [
+                            Math.round(dist * 0.5 + Math.random() * 500),
+                            Math.round(dist * 1.5 + Math.random() * 500),
+                            Math.round(dist * 0.8 + Math.random() * 200)
+                        ];
+                        return { mode: 'MC', question: `GEOGRAPHIE: Wie viele km Luftlinie liegen zwischen <span class="text-orange-400 font-black">${c1.name.common}</span> und <span class="text-yellow-400 font-black">${c2.name.common}</span>?`, correct_answer: `${dist} km`, incorrect_answers: others.map(o => `${o} km`) };
+                    } catch (e) { return { mode: 'MC', question: "Was ist die Hauptstadt von Deutschland?", correct_answer: "Berlin", incorrect_answers: ["Bonn", "Hagen", "München"] }; }
                 },
-                async () => { // 3. FLAGS (Rest Countries)
+                async () => { // 2. OUTLINE ORACLE
                     try {
-                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,flags");
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
                         const data = await res.json();
                         const country = data[Math.floor(Math.random() * data.length)];
-                        return { mode: 'IMG', image: country.flags.png, question: "WELCHES LAND GEHÖRT ZU DIESER FLAGGE?", correct_answer: country.name.common };
-                    } catch (e) { return sources[0](); }
+                        const code = country.cca2.toLowerCase();
+                        const imgUrl = `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${code}/1024.png`;
+                        const others = data.filter(d => d.name.common !== country.name.common).sort(() => Math.random() - 0.5).slice(0, 3).map(d => d.name.common);
+                        return { mode: 'IMG', image: imgUrl, question: "OUTLINE ORACLE: Welches Land hat diesen Umriss?", correct_answer: country.name.common, incorrect_answers: others };
+                    } catch (e) { return geoSources[0](); }
                 },
-                async () => { // 4. POKEMON (PokeAPI)
+                async () => { // 3. NEIGHBOR KNOCKOUT
                     try {
-                        const id = Math.floor(Math.random() * 151) + 1;
-                        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-                        const data = await res.json();
-                        return { mode: 'IMG', image: data.sprites.front_default, question: "POKEMON-RADAR: Wer ist das?", correct_answer: data.name };
-                    } catch (e) { return sources[0](); }
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,borders");
+                        const allData = (await res.json());
+                        const data = allData.filter(c => c.borders && c.borders.length > 0);
+                        const country = data[Math.floor(Math.random() * data.length)];
+                        const neighborCode = country.borders[Math.floor(Math.random() * country.borders.length)];
+                        const neighbor = allData.find(c => c.cca3 === neighborCode).name.common;
+                        const others = allData.filter(c => !country.borders.includes(c.cca3) && c.cca3 !== country.cca3).sort(() => Math.random() - 0.5).slice(0, 3).map(c => c.name.common);
+                        return { mode: 'MC', question: `NEIGHBOR KNOCKOUT: Welches dieser Länder ist ein direkter Nachbar von <span class="text-green-400 font-black">${country.name.common}</span>?`, correct_answer: neighbor, incorrect_answers: others };
+                    } catch (e) { return geoSources[0](); }
                 },
-                async () => { // 5. RICK & MORTY
+                async () => { // 4. SATELLITE CHECK
                     try {
-                        const id = Math.floor(Math.random() * 500) + 1;
-                        const res = await fetch(`https://rickandmortyapi.com/api/character/${id}`);
-                        const data = await res.json();
-                        return { mode: 'MC', question: `ZUSTANDSPRÜFUNG: Ist <span class="text-green-400">${data.name}</span> in der Serie Rick & Morty aktuell...?`, correct_answer: data.status, incorrect_answers: ["Ganz woanders", "In einer Dose", "Vergessen"] };
-                    } catch (e) { return sources[0](); }
+                        const cities = [
+                            { n: "Paris", lat: 48.8566, lon: 2.3522 }, { n: "New York", lat: 40.7128, lon: -74.006 },
+                            { n: "Berlin", lat: 52.52, lon: 13.405 }, { n: "Tokyo", lat: 35.6895, lon: 139.6917 },
+                            { n: "Sydney", lat: -33.8688, lon: 151.2093 }, { n: "Kairo", lat: 30.0444, lon: 31.2357 },
+                            { n: "London", lat: 51.5074, lon: -0.1278 }, { n: "Rio de Janeiro", lat: -22.9068, lon: -43.1729 }
+                        ];
+                        const city = cities[Math.floor(Math.random() * cities.length)];
+                        const imgUrl = `https://static-maps.yandex.ru/1.x/?ll=${city.lon},${city.lat}&z=13&l=sat&size=600,450`;
+                        const others = cities.filter(c => c.n !== city.n).sort(() => Math.random() - 0.5).slice(0, 3).map(c => c.n);
+                        return { mode: 'IMG', image: imgUrl, question: "SATELLITE CHECK: Welche Metropole sehen wir hier?", correct_answer: city.n, incorrect_answers: others };
+                    } catch (e) { return geoSources[0](); }
                 },
-                async () => { // 6. NUMBERS (NumbersAPI)
+                async () => { // 5. URBAN DATA
                     try {
-                        const id = Math.floor(Math.random() * 2000);
-                        const res = await fetch(`http://numbersapi.com/${id}/year?json`);
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,population");
                         const data = await res.json();
-                        return { mode: 'INPUT', question: `GESCHICHTS-CHECK: Was geschah im Jahr ${id}?<br><span class="text-[14px] leading-tight">${await translateText(data.text)}</span>`, correct_answer: id.toString() };
-                    } catch (e) { return sources[0](); }
-                },
-                async () => { // 7. URBAN SCRAMBLE
-                    const urbanWords = ["SKYLINE", "PENTHOUSE", "BETON", "WOLKENKRATZER", "METROPOLE", "STRASSENKUNST"];
-                    const word = urbanWords[Math.floor(Math.random() * urbanWords.length)];
-                    const scrambled = word.split('').sort(() => Math.random() - 0.5).join(' ');
-                    return { mode: 'INPUT', question: `STADT-RÄTSEL: Baue das Wort zusammen:<br><span class="text-amber-500 font-black tracking-widest">${scrambled}</span>`, correct_answer: word };
+                        const pool = data.sort(() => Math.random() - 0.5).slice(0, 4);
+                        const winner = pool.sort((a,b) => b.population - a.population)[0];
+                        const others = pool.filter(c => c.name.common !== winner.name.common).map(c => c.name.common);
+                        return {
+                            mode: 'MC',
+                            question: `POPULATIONS-POKER: Welches dieser Länder hat die meisten Einwohner?`,
+                            correct_answer: winner.name.common,
+                            incorrect_answers: others
+                        };
+                    } catch (e) { return geoSources[0](); }
                 }
             ];
 
-            // Shuffle and pick 7 unique sources (or repeat if needed)
-            const shuffled = sources.sort(() => Math.random() - 0.5);
-            for (let i = 0; i < 7; i++) {
-                custom.push(await (shuffled[i] || sources[0])());
+            const count = 5; // We take 5 geo questions
+            for (let i = 0; i < count; i++) {
+                const source = geoSources[i % geoSources.length];
+                custom.push(await source());
             }
             return custom;
         }
@@ -673,25 +782,62 @@
         }
 
         function handleData(data, conn) {
-            if (data.type === 'JOIN') { gameState.players[conn.peer] = { name: data.name, avatar: data.avatar, score: 0, lastPoints: 0, ready: false, tally: [] }; sync(); }
+            if (data.type === 'JOIN') { 
+                gameState.players[conn.peer] = { name: data.name, avatar: data.avatar, score: 0, lastPoints: 0, ready: false, tally: [] }; 
+                gameState.powerups[conn.peer] = { used: { 5050: false, double: false, shield: false }, activeShield: false };
+                sync(); 
+            }
             if (data.type === 'SYNC') { gameState = data.state; updateUI(); }
             if (data.type === 'SUBMIT') { const p = gameState.players[conn.peer]; p.ready = true; p.lastChoice = data.choice; checkAllReady(); }
+            if (data.type === 'BET') { gameState.bets[conn.peer] = { type: data.betType, val: data.val }; sync(); }
+            if (data.type === 'POWERUP') {
+                const p = gameState.powerups[conn.peer];
+                if (data.pu === '5050') p.used['5050'] = true;
+                if (data.pu === 'double') p.used['double'] = true;
+                if (data.pu === 'shield') { p.used['shield'] = true; p.activeShield = true; }
+                sync();
+            }
             if (data.type === 'REACTION') triggerEmoji(data.from, data.emoji);
             if (data.type === 'BOOT_START') runGlobalBootSequence();
         }
 
         function checkAllReady() {
             if (!isHost) return;
-            const all = Object.values(gameState.players);
-            if (all.every(p => p.ready)) {
+            const all = Object.entries(gameState.players);
+            if (all.every(([id, p]) => p.ready)) {
                 const q = gameState.questions[gameState.currentIndex];
                 let roundsCorrect = 0;
-                all.forEach(p => {
+                all.forEach(([id, p]) => {
                     const pInput = (p.lastChoice || "").toString().trim().toUpperCase();
-                    const isCorrect = pInput === q.correct_answer.toUpperCase();
-                    p.lastPoints = isCorrect ? 100 : 0; p.score += p.lastPoints;
-                    p.tally.push(isCorrect ? 'green' : 'red');
+                    let isCorrect = false;
+                    if (Array.isArray(q.correct_answer)) {
+                        isCorrect = q.correct_answer.some(a => a.toUpperCase() === pInput);
+                    } else {
+                        isCorrect = pInput === q.correct_answer.toUpperCase();
+                    }
+                    
+                    const pu = gameState.powerups[id];
+                    let multiplier = pu.used.double ? 2 : 1;
+                    
+                    const bet = gameState.bets[id] || { type: 'points', val: 0 };
+                    let basePoints = isCorrect ? 100 : 0;
+                    
+                    // Betting Logic
+                    if (bet.type === 'points') {
+                        basePoints = isCorrect ? (100 + bet.val) : -bet.val;
+                    }
+
+                    p.lastPoints = basePoints * multiplier;
+                    p.score += p.lastPoints;
+                    
+                    // Sauf-Logic with Shield
+                    const needsToSip = !isCorrect && !pu.activeShield;
+                    p.tally.push(isCorrect ? 'green' : (pu.activeShield ? 'shield' : 'red'));
+                    
                     if (isCorrect) roundsCorrect++;
+                    
+                    // Reset active shield after use/round
+                    pu.activeShield = false;
                 });
                 gameState.saufText = roundsCorrect === 0 ? "TOTALAUSFALL! Alle bechern!" : (roundsCorrect === 1 ? "STREBER! Rest trinkt!" : "Puh, Safe.");
                 gameState.history.push({ q: q.question, ans: q.correct_answer, players: JSON.parse(JSON.stringify(gameState.players)) });
@@ -720,17 +866,39 @@
                 return `<div class="race-horse" style="left: ${pos}%"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}"></div>`;
             }).join('');
 
-            document.getElementById('player-list').innerHTML = Object.entries(gameState.players).sort((a, b) => b[1].score - a[1].score).map(([id, p]) => `
-            <div class="p-4 chalk-card rounded-xl border-l-8 ${p.ready ? 'border-green-500' : 'border-zinc-700'} relative">
-                <div class="flex items-center gap-4 relative z-10">
-                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}" class="w-10 h-10 rounded bg-black">
-                    <div class="flex-grow">
-                        <p class="text-[10px] font-black uppercase">${p.name} ${id === leaderId && p.score > 0 ? '👓' : ''}</p>
-                        <p class="text-xl font-black text-orange-600">${p.score}</p>
-                        <div class="flex flex-wrap gap-1 mt-1">${(p.tally || []).map(t => `<div class="tally-mark tally-${t}"></div>`).join('')}</div>
+            document.getElementById('player-list').innerHTML = Object.entries(gameState.players).sort((a, b) => b[1].score - a[1].score).map(([id, p]) => {
+                const pu = gameState.powerups[id] || { used: {} };
+                return `
+                <div class="p-6 player-card rounded-2xl border-l-8 ${p.ready ? 'border-green-500' : 'border-zinc-700'} relative mb-4 shadow-xl">
+                    <div class="flex items-center gap-6 relative z-10">
+                        <div class="relative">
+                            <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}" class="w-20 h-20 rounded-full bg-slate-800 border-4 border-white shadow-lg">
+                            ${p.ready ? '<div class="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 text-xs">✅</div>' : ''}
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start">
+                                <p class="text-sm font-black uppercase tracking-tighter text-slate-300">${p.name} ${id === leaderId && p.score > 0 ? '👑' : ''}</p>
+                                <p class="text-3xl font-black text-orange-500 drop-shadow-md">${p.score}</p>
+                            </div>
+                            <!-- Tally marks -->
+                            <div class="tally-box">
+                                ${Array.from({ length: Math.ceil((p.tally || []).length / 5) }).map((_, i) => `
+                                    <div class="tally-group">
+                                        ${p.tally.slice(i * 5, i * 5 + 5).map(t => `<div class="tally-mark tally-${t}"></div>`).join('')}
+                                        ${p.tally.slice(i * 5, i * 5 + 5).length === 5 ? '<div class="tally-cross"></div>' : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <!-- PowerUp Status -->
+                            <div class="flex gap-2 mt-3 opacity-60">
+                                <span class="${pu.used['5050'] ? 'line-through' : ''}">🌓</span>
+                                <span class="${pu.used['double'] ? 'line-through' : ''}">🚀</span>
+                                <span class="${pu.used['shield'] ? 'line-through' : ''}">🛡️</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>`).join('');
+                </div>`;
+            }).join('');
 
             document.getElementById('ready-count').innerText = `${Object.values(gameState.players).filter(p => p.ready).length}/${Object.keys(gameState.players).length} BEREIT`;
             if (gameState.status === 'PLAYING') renderArena();
@@ -739,33 +907,47 @@
 
         async function initiateQuiz() {
             connections.forEach(c => c.send({ type: 'BOOT_START' })); await runGlobalBootSequence();
+            gameState.questions = [];
             gameState.isLoading = true; sync(); await typeBoot();
             const count = parseInt(document.getElementById('cfg-count').value);
             const diff = document.getElementById('cfg-diff').value;
-            const targetCat = selectedCats[Math.floor(Math.random() * selectedCats.length)];
-            const catUrl = targetCat === 9 ? '' : `&category=${targetCat}`;
-
+            
             try {
-                const res = await fetch(`https://opentdb.com/api.php?amount=3${catUrl}&difficulty=${diff}&type=multiple`);
-                const data = await res.json();
-                gameState.questions = [];
-                for (let q of data.results) {
-                    gameState.questions.push({
-                        mode: 'MC', question: await translateText(q.question),
-                        correct_answer: await translateText(q.correct_answer),
-                        incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a)))
-                    });
+                // Multi-category support
+                const catsToFetch = selectedCats.includes(9) ? [9] : selectedCats;
+                const perCat = Math.ceil(count / catsToFetch.length);
+                
+                for(let cat of catsToFetch) {
+                    const catUrl = cat === 9 ? '' : `&category=${cat}`;
+                    const res = await fetch(`https://opentdb.com/api.php?amount=${perCat}${catUrl}&difficulty=${diff}&type=multiple`);
+                    const data = await res.json();
+                    if(data.results) {
+                        for (let q of data.results) {
+                            gameState.questions.push({
+                                mode: 'MC', 
+                                question: `WISSENS-CHECK: ${await translateText(q.question)}`,
+                                correct_answer: await translateText(q.correct_answer),
+                                incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a)))
+                            });
+                        }
+                    }
                 }
+                
                 gameState.questions.push(...await generateCustomQuestions());
+                // Shuffle everything
+                gameState.questions.sort(() => Math.random() - 0.5);
+                // Respect the count
+                gameState.questions = gameState.questions.slice(0, count);
+                
                 gameState.status = 'PLAYING'; gameState.currentIndex = 0; gameState.isLoading = false; resetReadiness(); sync();
             } catch (e) { gameState.isLoading = false; sync(); alert("API Fehler! Bitte Seite neu laden."); }
         }
 
         async function typeBoot() {
-            const cmd = document.getElementById('boot-cmd'); const status = document.getElementById('boot-status'); const text = 'LOAD "JizzQuiz", 8, 1';
+            const cmd = document.getElementById('boot-cmd'); const status = document.getElementById('boot-status'); const text = 'LOAD "sQuizz", 8, 1';
             cmd.innerHTML = ''; for (let char of text) { cmd.innerHTML += char; await new Promise(r => setTimeout(r, 5)); }
             cmd.innerHTML += '<span class="cursor"></span>'; await new Promise(r => setTimeout(r, 50));
-            status.innerHTML = 'SEARCHING FOR JizzQuiz<br>LOADING<br>READY.<br>RUN<span class="cursor"></span>';
+            status.innerHTML = 'SEARCHING FOR sQuizz<br>LOADING<br>READY.<br>RUN<span class="cursor"></span>';
             await new Promise(r => setTimeout(r, 100));
         }
 
@@ -783,16 +965,72 @@
 
             if (gameState.showResolution) {
                 const res = document.getElementById('resolution'); res.classList.remove('hidden'); const p = gameState.players[myId];
-                document.getElementById('personal-feedback').innerHTML = p.lastPoints > 0 ? '<span class="text-green-500">RICHTIG! ✅</span>' : `<span class="text-red-500">DANEBEN! ("${p.lastChoice || 'Nix'}") ❌</span>`;
-                document.getElementById('correct-text').innerHTML = (q.mode === 'GHOST') ? q.correct_answer.split('').reverse().join('') : q.correct_answer;
-                document.getElementById('sauf-text').innerText = gameState.saufText;
+                document.getElementById('personal-feedback').innerHTML = p.lastPoints > 0 ? '<span class="text-green-500 text-4xl font-black">RICHTIG! ✅</span>' : `<span class="text-red-500 text-4xl font-black">DANEBEN! ❌</span>`;
+                document.getElementById('correct-text').innerHTML = q.correct_answer;
+                document.getElementById('sauf-text').innerHTML = `<span class="text-3xl">${gameState.saufText}</span>`;
                 if (isHost) document.getElementById('host-next').classList.remove('hidden');
-                if (p.lastPoints === 0) document.querySelector('.active-choice')?.classList.add('animate-throw');
             } else {
                 document.getElementById('resolution').classList.add('hidden');
-                if (q.mode === 'IMG') { document.getElementById('image-container').classList.remove('hidden'); document.getElementById('question-image').src = proxify(q.image); renderMC(q); }
-                else if (q.mode === 'INPUT') { document.getElementById('ghost-area').classList.remove('hidden'); renderInput(q); }
-                else { renderMC(q); }
+                
+                // Betting UI
+                const currentBet = gameState.bets[myId] || { val: 0 };
+                const pu = gameState.powerups[myId];
+                
+                const sidebarInject = `
+                    <div class="flex flex-col gap-4 mb-8 bg-black/40 p-6 rounded-2xl border-2 border-white/10">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-widest text-orange-500">Dein Einsatz:</span>
+                            <div class="flex gap-2">
+                                <button onclick="setBet(0)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 0 ? 'bg-orange-500' : ''}">0</button>
+                                <button onclick="setBet(50)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 50 ? 'bg-orange-500' : ''}">50</button>
+                                <button onclick="setBet(100)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 100 ? 'bg-orange-500' : ''}">100</button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                            <span class="text-xs font-bold uppercase tracking-widest text-cyan-400">Power-Ups:</span>
+                            <div class="flex gap-4">
+                                <button onclick="usePU('5050')" class="powerup-btn ${!pu.used['5050'] ? 'active' : 'used'}" title="50:50">🌓</button>
+                                <button onclick="usePU('double')" class="powerup-btn ${!pu.used['double'] ? 'active' : 'used'}" title="Doppel-Wumms">🚀</button>
+                                <button onclick="usePU('shield')" class="powerup-btn ${!pu.used['shield'] ? 'active' : 'used'}" title="Sauf-Schild">🛡️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (q.mode === 'IMG') { 
+                    document.getElementById('image-container').classList.remove('hidden'); 
+                    document.getElementById('question-image').src = proxify(q.image); 
+                    renderMC(q); 
+                } else { 
+                    renderMC(q); 
+                }
+                
+                // Inject Betting/PU UI if not already present
+                if(!document.getElementById('game-tools')) {
+                    const tools = document.createElement('div');
+                    tools.id = 'game-tools';
+                    document.getElementById('screen-quiz').insertBefore(tools, document.getElementById('screen-quiz').firstChild);
+                }
+                document.getElementById('game-tools').innerHTML = sidebarInject;
+            }
+        }
+
+        function setBet(v) {
+            if(isHost) handleData({ type: 'BET', val: v, betType: 'points' }, { peer: myId });
+            else connections[0].send({ type: 'BET', val: v, betType: 'points' });
+        }
+
+        function usePU(type) {
+            const pu = gameState.powerups[myId];
+            if(pu.used[type]) return;
+            if(isHost) handleData({ type: 'POWERUP', pu: type }, { peer: myId });
+            else connections[0].send({ type: 'POWERUP', pu: type });
+            
+            if(type === '5050') {
+                const buttons = Array.from(document.querySelectorAll('.paper-note'));
+                const q = gameState.questions[gameState.currentIndex];
+                const wrong = buttons.filter(b => b.innerHTML !== q.correct_answer);
+                wrong.sort(() => Math.random() - 0.5).slice(0, 2).forEach(b => b.style.display = 'none');
             }
         }
 
@@ -807,29 +1045,33 @@
             }
         }
 
-        function renderInput(q) {
-            const gs = document.getElementById('ghost-sequence');
-            gs.innerHTML = '';
-            document.getElementById('ghost-input').value = '';
-        }
 
         function triggerEmoji(from, emoji) {
             const ov = document.getElementById('emoji-display'); document.getElementById('emoji-sender').innerText = "FROM: " + from; document.getElementById('emoji-icon').innerText = emoji;
             ov.classList.add('opacity-100'); setTimeout(() => ov.classList.remove('opacity-100'), 1500);
         }
 
-        function sendEmoji(e) { if (isHost) handleData({ type: 'REACTION', from: myName, emoji: e }, { peer: myId }); connections.forEach(c => c.send({ type: 'REACTION', from: myName, emoji: e })); if (!isHost) triggerEmoji(myName, e); }
         function nextRound() { gameState.currentIndex++; if (gameState.currentIndex >= gameState.questions.length) gameState.status = 'RESULTS'; else resetReadiness(); sync(); }
-        function resetReadiness() { gameState.showResolution = false; Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); }
+        function resetReadiness() { 
+            gameState.showResolution = false; 
+            gameState.bets = {};
+            Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); 
+        }
 
         function renderFinal() {
             document.getElementById('screen-quiz').classList.add('hidden'); document.getElementById('screen-results').classList.remove('hidden');
             document.getElementById('podium').innerHTML = Object.values(gameState.players).sort((a, b) => b.score - a.score).map((p, i) => `
             <div class="flex justify-between chalk-card p-4 rounded-xl mb-2"><span class="text-xl">#${i + 1} ${p.name}</span><span class="text-xl text-yellow-500">${p.score}</span></div>`).join('');
             document.getElementById('summary-table').innerHTML = gameState.history.map((h, i) => `
-            <div class="border-b border-gray-300 pb-2 mb-2 text-left"><p class="font-bold text-[9px] uppercase">Q${i + 1}: ${h.q}</p><div class="flex flex-wrap gap-2 mt-1">
-                ${Object.values(h.players).map(p => { const isCorrect = p.lastPoints > 0; return `<span class="text-[8px] px-1 rounded border ${isCorrect ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'}">${p.name}: ${p.lastChoice || '-'}</span>`; }).join('')}
-            </div></div>`).join('');
+            <div class="border-b-2 border-slate-400 pb-4 mb-4 text-left">
+                <p class="font-black text-xl uppercase text-slate-800">Q${i + 1}: ${h.q}</p>
+                <div class="flex flex-wrap gap-3 mt-3">
+                    ${Object.entries(h.players).map(([id, p]) => { 
+                        const isCorrect = p.lastPoints > 0; 
+                        return `<span class="text-sm px-3 py-1 rounded-lg border-2 font-bold ${isCorrect ? 'bg-green-100 text-green-800 border-green-400' : 'bg-red-100 text-red-800 border-red-400'}">${p.name}: ${p.lastChoice || '-'}</span>`; 
+                    }).join('')}
+                </div>
+            </div>`).join('');
             confetti({ particleCount: 1000, spread: 120, origin: { y: 0.6 } });
         }
 
