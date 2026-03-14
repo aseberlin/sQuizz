@@ -149,12 +149,7 @@
                                     </div>
                                 </div>
                                 <div id="host-only-settings" class="hidden space-y-6">
-                                    <div>
-                                        <label class="block text-primary text-xs font-black uppercase mb-2">Question Count</label>
-                                        <select id="cfg-count" class="w-full bg-wood-light border border-primary/20 text-white rounded-xl p-4 font-bold outline-none cursor-pointer">
-                                            <!-- Options injected by JS -->
-                                        </select>
-                                    </div>
+                                    <!-- Question count hardcoded to 10 -->
                                     <div>
                                         <label class="block text-primary text-xs font-black uppercase mb-2">Map Selection</label>
                                         <select id="cfg-map" class="w-full bg-wood-light border border-primary/20 text-white rounded-xl p-4 font-bold outline-none cursor-pointer">
@@ -557,7 +552,7 @@
 
     async function initiateQuiz() {
         if(!isHost) return;
-        const count = parseInt(document.getElementById('cfg-count').value);
+        const count = 10;
         gameState.status = 'BOOTING';
         gameState.currentIndex = 0;
         gameState.questions = [];
@@ -769,15 +764,7 @@
         <button onclick="sendEmoji('${e}')" class="size-10 flex items-center justify-center hover:bg-primary/20 rounded-full transition-transform hover:scale-125">${e}</button>
     `).join('');
 
-    // Init Question Count
-    const countSelect = document.getElementById('cfg-count');
-    if (countSelect) {
-        let options = "";
-        for (let i = 1; i <= 20; i++) {
-            options += `<option value="${i}">${i} Questions</option>`;
-        }
-        countSelect.innerHTML = options;
-    }
+    
 
     // Init Avatars
     const avatarGrid = document.getElementById('avatar-grid');
