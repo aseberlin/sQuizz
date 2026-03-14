@@ -206,7 +206,7 @@
                 </div>
             </div>
 
-            <div id="question-timer" class="text-primary font-mono font-black text-2xl">--:--</div>
+            <!-- Timer removed as requested -->
         </header>
 
         <div class="flex flex-1 overflow-hidden">
@@ -327,18 +327,18 @@
     };
 
     const AVATARS = [
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Abe',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Buster',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Clyde',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Zack',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Fritz',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Hulk',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Bier',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Pferd',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Sheriff',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Outlaw',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Cactus',
-        'https://api.dicebear.com/7.x/pixel-art/svg?seed=Tavern'
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBR4Q1CdAorRh0hKOSLrNQOHCRaRgaT6tFKrrBR-mNwoF4A-916PPc66Yw0aMrrkD7-QuhTK25R0azUksvZn9r8FeXpdQ-PMRJenS4k-xqvt-GvFUiDXa4xSWggOSvNcE_dyCzDPotf1Kk0vNyxLKKBWwjSecAeG-7EY7gJPjWvPIGmc8nILgdYHFJkODzWpKNrtqEglSSN2XRDxy82AXN2X7GIXnbfiJa5yM0ROvY9JP_S8zh6Agg_m-Um-aAR26S4hDzB9aRKVBoq',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuD1QZTXuu4zBTVLpI8i8esr4OYjnmHTMtez5SipxhXMJgMj6ghnuy-Mf8XJrptfPloju8VpeylEcEAyQfc7U9a5DnrCJWZkFQQKxvYfePt6WVaw7v_Ms-o-GJZUFYA9Z2A-7ihv7-A2cdGOnMks7cqWvgM22gm2ukM2wU0I7zVUWVlbhiqfUW7trl5P75pjWt6UBZqm_mEZ2ZZ8F8MYI-ryj0Xre53WHmZECfY4bfPvYBrXcpSr9_gCO8my7oJjC1mPmaffSEbPUEH4',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCfZRnkp-87WHfkIPjK8E_L47uVf5roXG5VMd2NUlWWgLvHBwtSqx5uawToUj805BVAdHsF1F3Qz1IODt7niQ6J1HNg9iXnoj3wPsmsVk7-7MJSfYNVftnHV--MukwAQJMRqlK-QOBr5L_96cegGv9BgcApSOTQW3DClEQNK75wYXrkPIEdKIIWMTeYbUTybO4obpmAGLbD8Cu2EWsr74Pm9riRrrN7yR-agLb3i2zuqSd2nwDsbCKcTSY-cp5BaeYHFT6rXvvHXbqK',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBMtLXkqP60-ReAUB4A5VvSwzyprIeTPLsrXkrSrNd-78XfbzwXbZX90xio9RMzvq5GDsRxpkwdq4nsx7OMkh7fTPfHxRpTxLQmHBJcaK95wKp8toUj6kxUQPfy7AtfMUPxpsdx6gdXrTVrSJciaUH8pWme5bLfIJyFreTk3LJiv9Mh80YXWcX89m-yrzY37xuwWl8JKUgGKDJ0DodnHawufVjZQXsy8X-k_zgLkUgKpUIZVginm-1VYiIFSVL9JMcp6-TzbXDE-Pf-',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuC5KVh0b3DKMwQfo6968oiKwFi2WHFJFC3rVGlJ-okNGvQahbi7PV5jHdKc00xoutUv3Kohz2H0rPT60xKPgCmhka6_mfmZ1q7WIlWlSlza3t_vsg0Ntu7UqMdezqt0x5avpAlYf145r4TFmoF-JonCMpNxah29CvVnzEXPCPL-Pat5YxJ3JDEoUiq4UWvSgs5C27FGvIfz3Q7sW3iBQWaKipr4mUTRlOAgv0mXNAlIsFLe867VKEsMDlfjJCQtJyLO7RU6KhsDFzTq',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCJ_x-wiRQDJa2EvzVdIxhtor80Rbey76Dw7Us3nE-_Fly8lZKeejW86fOnsopXDcBUbUmdJSPHw6RkuIEy9RA8qv6_B2tIsOpEkLcS9-Os3wgZSq2fivvXdX6VPaEt78rFtvc9anUYQcRceCUIXXQflwkGTsder0mOeTW_VUniS0lRP_inyk_T1DYWl7nWZI8EmZd7-qKeTIAV9wgtomShlFOC2X3ERrIfR_zjNbiOkJmokNk9ubi__vX2Zu2QzPUMR5gy3IOI2nIe',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCadDJHgerXqQQxIwqQTZkvM0GC6nAmYVmegV128x9FOTF1yQLK3qCVIqZdBxDH2lqzFTswKx1GgTy3emX6rCZsenjfouFPmQZT-1ALM2iUa5CYVJnwCzQPZiY9Tw6RsXlhuJJ0zavuNcsvbOZ_Nm8vBG4AHk-VXPXyAvJa2nXd7JfZsttZl7F6OepuyG9oZakd5b8CEQfpMfsQDaaYd8wtLT-QxFUTmzGrhryxD13J2c0j-jU-sOPJNS6pO7Hy6zKpC77vYp0DOTh2',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuDz2LglcFfSmMut3w6HfAOc7TbM60GMQFK2bfzvGStcQUbQGruLx_8RM3Q9ETlLvrMzEjSSj9c3fDYgsDJjjvzhfyCSBigM2bNOqvi6SLMBOQD8Jz_2KQebkplMawGIkZK84llw27tT2hYGHRcEzFzWGgBf7dbGzGkqcZdztSTmrXWSROJLRbK0M_UWtW5w2v0R9Z9oa2cYidsuoihYtxmFW6GsOsuV2NyWO882AhyKChu5OLWeCi6Dl0PkndfvFb7jEoT-2DGLHH-a',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuAlMdqR-g33rAXDeBldfREZMYW2utvM4T6TQ4AntfUB6xERmrQ_1S9C2NU_E0Vd9L-E0tl8vv_QAx0NTvAQpk_M26WmsXs6sglblmDE6BXCpgrASKekCh7aI6K4monSjhJv5L2mCZHKl-bZ-MkxkrCVc2pmvQDuYEeKUB22om9W4LgXNjmE2RADehTHvxQ5_O1dhQ-qi4vGNpE2LnwgGOlDl2eZqffQbLhnZk3E0VVtwm5atuSw6-9SV_7lzFRoj4dxhpCnZpDN4pgZ',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuAZNmrvFVE2D-1ICAV6FoPrUadYJ27E4K3PNOp4jVE-VBnTpigrgPbml6_kRAg5Ozgi0Md5IkhKD-RiP9Rj2DH1iJMmUY_7kon0WYyBsKcRvd3ARgErvAIt7I4_3d7IPvm6jDHADYLblmTqdxuEbXgUsDZ5cbKjsMxvnhhBhjeGia3yKnQFHXocEiRyybs4CwRuMDvBjP7FLuxqWs6J0ieVk8QHgb6znx3kR6oSeGmWT6FrAjHBb5_NqFsJN15_--BHG4g5TXGiQDRq',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBJDFHwHP7YWndgxSGuswUEEuJnt7DvbaEX2xdEMAyG2qEwoqggPQL7vZ0K8_UAklD1tah6OiyKqGu1CWDcQcmSAMu4rH0WQnPHez6sB4A0FYeRkm9f675VdPyY7iJLolYk-H3Tr6S3YQcTiNqjuGx67opc2vbclZuUE2aDDNANamspl5H3ioMzK2HoexDKOfjYa9rOfFtZcMzlze831R64-Nzx_nX8Payk0eKSSD70glfoFw-2I0rS8WY9Jpu7YdjLYZaZ0Ah--Gy3',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBOe7H4A1pwuq55m4vCZmSRGC8eAUye9NDqnlUAXz01xaxeo0kiQFykJEBJxPULJnhm69CrUaF07IFhhwZFt03d5pZ379bo8U9TVgtM5TJ3bUOylUORNdsqapExLIeorQyFlelEBG4jDVY1V3BE9s5lLvrxLH9zvE-PmgqZKBHigz77kyqBWu9-sXa7bWi2tgew-nRIwhQsQkDDzQwQxYxITzQAhatSyIkETF2hctVqdTTw3A9ai-SXIzHkHx-9eQp5lCtYs-0_xRe9'
     ];
     let myAvatar = AVATARS[0];
 
@@ -367,6 +367,16 @@
         const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    }
+    async function isImageValid(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+            // Timeout after 3 seconds
+            setTimeout(() => resolve(false), 3000);
+        });
     }
 
     // --- PeerJS Logic ---
@@ -467,16 +477,23 @@
                     const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
                     const data = await res.json();
                     const target = data[Math.floor(Math.random()*data.length)];
-                    qData = { mode: 'IMG', image: `https://raw.githubusercontent.com/lucasbento/google-maps-icons/master/lib/images/countries/${target.cca2.toLowerCase()}.png`, question: "Outline Oracle: Which country is this?", correct_answer: target.name.common, incorrect_answers: [data[10].name.common, data[20].name.common, data[(Math.floor(Math.random()*200))].name.common].filter(n => n !== target.name.common).slice(0,3) };
+                    const imgUrl = `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${target.cca2.toLowerCase()}/vector.svg`;
+                    if (await isImageValid(imgUrl)) {
+                        qData = { mode: 'IMG', image: imgUrl, question: "Outline Oracle: Which country is this?", correct_answer: target.name.common, incorrect_answers: [data[10].name.common, data[20].name.common, data[(Math.floor(Math.random()*200))].name.common].filter(n => n !== target.name.common).slice(0,3) };
+                    }
                 } else if (cat === 'brand') {
                     const brands = [
                         { name: "Tesla", domain: "tesla.com" }, { name: "Ferrari", domain: "ferrari.com" }, 
                         { name: "BMW", domain: "bmw.com" }, { name: "Porsche", domain: "porsche.com" },
                         { name: "Toyota", domain: "toyota.com" }, { name: "Audi", domain: "audi.com" },
-                        { name: "Mercedes", domain: "mercedes-benz.com" }, { name: "Lamborghini", domain: "lamborghini.com" }
+                        { name: "Mercedes", domain: "mercedes-benz.com" }, { name: "Lamborghini", domain: "lamborghini.com" },
+                        { name: "Volkswagen", domain: "vw.com" }, { name: "Jaguar", domain: "jaguar.com" }
                     ];
                     const b = brands[Math.floor(Math.random() * brands.length)];
-                    qData = { mode: 'IMG', image: `https://logo.clearbit.com/${b.domain}?size=256`, question: "Brand Master: Which automotive legend is this?", correct_answer: b.name, incorrect_answers: brands.filter(x => x.name !== b.name).map(x => x.name).slice(0,3) };
+                    const imgUrl = `https://logo.clearbit.com/${b.domain}?size=500`;
+                    if (await isImageValid(imgUrl)) {
+                        qData = { mode: 'IMG', image: imgUrl, question: "Brand Master: Which automotive legend is this?", correct_answer: b.name, incorrect_answers: brands.filter(x => x.name !== b.name).map(x => x.name).slice(0,3) };
+                    }
                 } else if (cat === 'club') {
                     const clubs = [
                         { name: "Real Madrid", id: 86 }, { name: "FC Bayern", id: 5 }, 
@@ -485,7 +502,10 @@
                         { name: "Man City", id: 65 }, { name: "AC Milan", id: 98 }
                     ];
                     const c = clubs[Math.floor(Math.random() * clubs.length)];
-                    qData = { mode: 'IMG', image: `https://crests.football-data.org/${c.id}.png`, question: "Club Crest: Which international giant is this?", correct_answer: c.name, incorrect_answers: clubs.filter(x => x.name !== c.name).map(x => x.name).slice(0,3) };
+                    const imgUrl = `https://crests.football-data.org/${c.id}.png`;
+                    if (await isImageValid(imgUrl)) {
+                        qData = { mode: 'IMG', image: imgUrl, question: "Club Crest: Which international giant is this?", correct_answer: c.name, incorrect_answers: clubs.filter(x => x.name !== c.name).map(x => x.name).slice(0,3) };
+                    }
                 } else if (cat === 'art') {
                     const arts = [
                         { name: "Starry Night", artist: "Vincent van Gogh", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/757px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg" },
@@ -493,7 +513,9 @@
                         { name: "The Scream", artist: "Edvard Munch", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/800px-The_Scream.jpg" }
                     ];
                     const a = arts[Math.floor(Math.random() * arts.length)];
-                    qData = { mode: 'IMG', image: a.img, question: `Art Master: Who painted '${a.name}'?`, correct_answer: a.artist, incorrect_answers: ["Pablo Picasso", "Claude Monet", "Salvador Dalí"] };
+                    if (await isImageValid(a.img)) {
+                        qData = { mode: 'IMG', image: a.img, question: `Art Master: Who painted '${a.name}'?`, correct_answer: a.artist, incorrect_answers: ["Pablo Picasso", "Claude Monet", "Salvador Dalí"] };
+                    }
                 } else if (cat === 'landmark') {
                     const spots = [
                         { name: "Eiffel Tower", lat: 2.2945, lon: 48.8584 },
@@ -501,12 +523,23 @@
                         { name: "Statue of Liberty", lat: -74.0445, lon: 40.6892 }
                     ];
                     const s = spots[Math.floor(Math.random() * spots.length)];
-                    qData = { mode: 'IMG', image: `https://static-maps.yandex.ru/1.x/?ll=${s.lat},${s.lon}&z=16&l=sat`, question: "Landmark Check: Identify this world wonder.", correct_answer: s.name, incorrect_answers: spots.filter(x => x.name !== s.name).map(x => x.name).slice(0,3) };
+                    const imgUrl = `https://static-maps.yandex.ru/1.x/?ll=${s.lat},${s.lon}&z=16&l=sat`;
+                    if (await isImageValid(imgUrl)) {
+                        qData = { mode: 'IMG', image: imgUrl, question: "Landmark Check: Identify this world wonder.", correct_answer: s.name, incorrect_answers: spots.filter(x => x.name !== s.name).map(x => x.name).slice(0,3) };
+                    }
                 } else {
                     qData = { mode: 'MC', question: "Generic: What is 2+2?", correct_answer: "4", incorrect_answers: ["3", "5", "6"] };
                 }
-                if (qData) custom.push(qData);
-            } catch (e) { console.error("Gen failed for", cat, e); }
+                
+                if (qData) {
+                    custom.push(qData);
+                } else {
+                    i--; // Retry if image invalid or no data
+                }
+            } catch (e) { 
+                console.error("Gen failed for", cat, e);
+                i--; // Retry
+            }
         }
         
         // Final validation: Ensure exactly 3 incorrect answers
