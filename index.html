@@ -123,9 +123,12 @@
                     </div>
                 </nav>
                 <div id="p2p-info" class="mt-auto pt-6 border-t border-primary/10">
-                    <div class="bg-primary/10 p-4 rounded-xl border border-primary/20">
-                        <p class="text-[10px] text-primary font-black uppercase mb-1">Status</p>
-                        <p id="p2p-status-text" class="text-white text-xs font-mono">Connecting...</p>
+                    <div class="bg-primary/10 p-4 rounded-xl border border-primary/20 flex items-center gap-3">
+                        <div id="p2p-status-dot" class="size-2 rounded-full bg-slate-500"></div>
+                        <div>
+                            <p class="text-[10px] text-primary font-black uppercase mb-0.5">Status</p>
+                            <p id="p2p-status-text" class="text-white text-xs font-mono">Connecting...</p>
+                        </div>
                     </div>
                 </div>
             </aside>
@@ -424,14 +427,21 @@
 
     // --- PeerJS Logic ---
     function init() {
-        document.getElementById('p2p-status-text').innerText = "Warming up...";
+        const statusText = document.getElementById('p2p-status-text');
+        const statusDot = document.getElementById('p2p-status-dot');
+        
+        if(statusText) statusText.innerText = "Warming up...";
+        
         peer = new Peer();
         peer.on('open', id => { 
             myId = id; 
             document.getElementById('room-id-text').innerText = id;
-            document.getElementById('p2p-status-text').innerText = "Table Active";
-            document.getElementById('p2p-status-dot').className = "size-2 rounded-full bg-emerald-500 animate-pulse";
-            setTimeout(() => setState('LOBBY'), 1200);
+            if(statusText) statusText.innerText = "Table Active";
+            if(statusDot) statusDot.className = "size-2 rounded-full bg-emerald-500 animate-pulse";
+            setTimeout(() => {
+                setState('LOBBY');
+                updateTotalCount(); // Ensure counter is correct on load
+            }, 1200);
         });
         peer.on('connection', conn => {
             conn.on('open', () => {
@@ -448,8 +458,8 @@
         });
         peer.on('error', err => {
             console.error("PeerJS Error:", err);
-            document.getElementById('p2p-status-text').innerText = "Network Error";
-            document.getElementById('p2p-status-dot').className = "size-2 rounded-full bg-red-500";
+            if(statusText) statusText.innerText = "Network Error";
+            if(statusDot) statusDot.className = "size-2 rounded-full bg-red-500";
             if (err.type === 'peer-unavailable') {
                 alert("Room code not found. Check if the Host is still online!");
             }
