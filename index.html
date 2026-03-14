@@ -421,7 +421,7 @@
 
     <script>
         let peer, myId, myName, myAvatarIdx = 0, connections = [], isHost = false;
-        let gameState = { players: {}, questions: [], currentIndex: 0, status: 'LOBBY', showResolution: false, history: [], isLoading: false, bets: {}, powerups: {}, saufText: "" };
+        let gameState = { players: {}, questions: [], currentIndex: 0, status: 'LOBBY', showResolution: false, history: [], isLoading: false, saufText: "" };
 
         const TRIVIA_CATS = [
             { id: 9, name: "Gemischt" }, { id: 11, name: "Film" }, { id: 12, name: "Musik" },
@@ -484,7 +484,6 @@
             myName = document.getElementById('username').value.trim() || "Host"; isHost = true;
             document.getElementById('host-config').classList.remove('hidden');
             gameState.players[myId] = { name: myName, avatar: AVATAR_SEEDS[myAvatarIdx], score: 0, lastPoints: 0, ready: false, tally: [] }; 
-            gameState.powerups[myId] = { used: { 5050: false, double: false, shield: false }, activeShield: false };
             sync();
         }
 
@@ -498,21 +497,10 @@
         function handleData(data, conn) {
             if (data.type === 'JOIN') { 
                 gameState.players[conn.peer] = { name: data.name, avatar: data.avatar, score: 0, lastPoints: 0, ready: false, tally: [] }; 
-                gameState.powerups[conn.peer] = { used: { 5050: false, double: false, shield: false }, activeShield: false };
                 sync(); 
             }
             if (data.type === 'SYNC') { gameState = data.state; updateUI(); }
             if (data.type === 'SUBMIT') { const p = gameState.players[conn.peer]; if(p) { p.ready = true; p.lastChoice = data.choice; checkAllReady(); } }
-            if (data.type === 'BET') { gameState.bets[conn.peer] = { type: data.betType, val: data.val }; sync(); }
-            if (data.type === 'POWERUP') {
-                const p = gameState.powerups[conn.peer];
-                if(p) {
-                    if (data.pu === '5050') p.used['5050'] = true;
-                    if (data.pu === 'double') p.used['double'] = true;
-                    if (data.pu === 'shield') { p.used['shield'] = true; p.activeShield = true; }
-                    sync();
-                }
-            }
             if (data.type === 'REACTION') triggerEmoji(data.from, data.emoji);
         }
 
@@ -531,15 +519,9 @@
                         isCorrect = pInput === q.correct_answer.toUpperCase();
                     }
                     
-                    const pu = gameState.powerups[id] || { used: { double: false }, activeShield: false };
-                    let multiplier = pu.used.double ? 2 : 1;
-                    const bet = gameState.bets[id] || { type: 'points', val: 0 };
-                    let basePoints = isCorrect ? 100 : 0;
-                    if (bet.type === 'points') { basePoints = isCorrect ? (100 + bet.val) : -bet.val; }
-                    p.lastPoints = basePoints * multiplier; p.score += p.lastPoints;
-                    p.tally.push(isCorrect ? 'green' : (pu.activeShield ? 'shield' : 'red'));
+                    p.lastPoints = isCorrect ? 100 : 0; p.score += p.lastPoints;
+                    p.tally.push(isCorrect ? 'green' : 'red');
                     if (isCorrect) roundsCorrect++;
-                    pu.activeShield = false;
                 });
                 gameState.saufText = roundsCorrect === 0 ? "TOTALAUSFALL! Alle bechern!" : (roundsCorrect === 1 ? "STREBER! Rest trinkt!" : "Puh, Safe.");
                 gameState.history.push({ q: q.question, ans: q.correct_answer, players: JSON.parse(JSON.stringify(gameState.players)) });
@@ -568,7 +550,7 @@
                             <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}" class="w-20 h-20 rounded-full bg-slate-800 border-4 border-white shadow-lg">
                             ${p.ready ? '<div class="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 text-xs">✅</div>' : ''}
                         </div>
-                        <div class="flex-grow">
+                        <div class="flex-grow text-left">
                             <div class="flex justify-between items-center mb-2">
                                 <p class="text-3xl font-black uppercase tracking-tighter text-white drop-shadow-md">${p.name} ${id === leaderId && p.score > 0 ? '👑' : ''}</p>
                                 <p class="text-3xl font-black text-orange-500 drop-shadow-md">${p.score}</p>
@@ -600,45 +582,87 @@
         async function generateCustomQuestions() {
             const custom = [];
             const geoSources = [
-                async () => {
+                async () => { // 1. DISTANCE DUEL
                     try {
                         const res = await fetch("https://restcountries.com/v3.1/all?fields=name,capitalInfo,latlng");
                         const data = (await res.json()).filter(c => c.capitalInfo && c.capitalInfo.latlng);
-                        const c1 = data[Math.floor(Math.random() * data.length)]; const c2 = data[Math.floor(Math.random() * data.length)];
+                        const c1 = data[Math.floor(Math.random() * data.length)];
+                        const c2 = data[Math.floor(Math.random() * data.length)];
                         const dist = calculateDistance(c1.latlng[0], c1.latlng[1], c2.latlng[0], c2.latlng[1]);
-                        return { mode: 'MC', question: `GEOGRAPHIE: Wie viele km Luftlinie liegen zwischen <span class="text-orange-400 font-black">${c1.name.common}</span> und <span class="text-yellow-400 font-black">${c2.name.common}</span>?`, correct_answer: `${dist} km`, incorrect_answers: [`${Math.round(dist * 0.5)} km`, `${Math.round(dist * 1.5)} km`, `${Math.round(dist * 0.8)} km`] };
-                    } catch (e) { return { mode: 'MC', question: "Fehler", correct_answer: "?", incorrect_answers: ["?"] }; }
+                        return { mode: 'MC', question: `GEOGRAPHIE: Wie viele km Luftlinie liegen zwischen <span class="text-orange-400 font-black">${c1.name.common}</span> und <span class="text-yellow-400 font-black">${c2.name.common}</span>?`, correct_answer: `${dist} km`, incorrect_answers: [`${Math.round(dist * 0.5 + Math.random() * 500)} km`, `${Math.round(dist * 1.5 + Math.random() * 500)} km`, `${Math.round(dist * 0.8 + Math.random() * 200)} km`] };
+                    } catch (e) { return null; }
                 },
-                async () => {
+                async () => { // 2. OUTLINE ORACLE
                     try {
                         const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
-                        const data = (await res.json()); const target = data[Math.floor(Math.random() * data.length)];
-                        return { mode: 'IMG', image: `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${target.cca2.toLowerCase()}/vector.svg`, question: "WELCHES LAND IST DAS?", correct_answer: target.name.common, incorrect_answers: [data[0].name.common, data[1].name.common, data[2].name.common] };
-                    } catch (e) { return { mode: 'MC', question: "Fehler", correct_answer: "?", incorrect_answers: ["?"] }; }
+                        const data = (await res.json());
+                        const target = data[Math.floor(Math.random() * data.length)];
+                        return { mode: 'IMG', image: `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${target.cca2.toLowerCase()}/vector.svg`, question: "OUTLINE ORACLE: Welches Land ist das?", correct_answer: target.name.common, incorrect_answers: [data[Math.floor(Math.random() * data.length)].name.common, data[Math.floor(Math.random() * data.length)].name.common, data[Math.floor(Math.random() * data.length)].name.common] };
+                    } catch (e) { return null; }
+                },
+                async () => { // 3. NEIGHBOR KNOCKOUT
+                    try {
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,borders");
+                        const data = (await res.json()).filter(c => c.borders && c.borders.length > 3);
+                        const target = data[Math.floor(Math.random() * data.length)];
+                        const neighbors = target.borders;
+                        return { mode: 'MC', question: `NEIGHBOR KNOCKOUT: Wie viele Nachbarländer hat <span class="text-orange-400 font-black">${target.name.common}</span>?`, correct_answer: `${neighbors.length}`, incorrect_answers: [`${neighbors.length + 2}`, `${Math.max(1, neighbors.length - 2)}`, `${neighbors.length + 4}`] };
+                    } catch (e) { return null; }
+                },
+                async () => { // 4. SATELLITE CHECK
+                    const spots = [
+                        { name: "Paris (Eiffelturm)", lat: 48.8584, lon: 2.2945 },
+                        { name: "New York (Statue of Liberty)", lat: 40.6892, lon: -74.0445 },
+                        { name: "Rom (Kolosseum)", lat: 41.8902, lon: 12.4922 },
+                        { name: "Gizeh (Pyramiden)", lat: 29.9792, lon: 31.1342 }
+                    ];
+                    const spot = spots[Math.floor(Math.random() * spots.length)];
+                    const others = spots.filter(s => s.name !== spot.name).map(s => s.name);
+                    return { mode: 'IMG', image: `https://static-maps.yandex.ru/1.x/?ll=${spot.lon},${spot.lat}&z=16&l=sat`, question: "SATELLITE CHECK: Welcher Ort ist das?", correct_answer: spot.name, incorrect_answers: others };
+                },
+                async () => { // 5. URBAN COMPARISON
+                    try {
+                        const res = await fetch("https://restcountries.com/v3.1/all?fields=name,population");
+                        const data = (await res.json()).filter(c => c.population > 1000000);
+                        const c1 = data[Math.floor(Math.random() * data.length)];
+                        const c2 = data[Math.floor(Math.random() * data.length)];
+                        const winner = c1.population > c2.population ? c1 : c2;
+                        const loser = c1.population > c2.population ? c2 : c1;
+                        return { mode: 'MC', question: `URBAN COMPARISON: Welches Land hat mehr Einwohner?`, correct_answer: winner.name.common, incorrect_answers: [loser.name.common, "Beide gleich", "Keines davon"] };
+                    } catch (e) { return null; }
                 }
             ];
-            for (let i = 0; i < 5; i++) custom.push(await geoSources[i % geoSources.length]());
+            for (let source of geoSources) {
+                const q = await source();
+                if (q) custom.push(q);
+            }
             return custom;
         }
 
         async function initiateQuiz() {
             gameState.questions = []; gameState.isLoading = true; sync(); 
-            const count = parseInt(document.getElementById('cfg-count').value);
+            const count = 10;
             const diff = document.getElementById('cfg-diff').value;
             try {
+                // Fetch 5 Trivia questions
                 const catsToFetch = selectedCats.includes(9) ? [9] : selectedCats;
-                const perCat = Math.ceil(count / catsToFetch.length);
-                for(let cat of catsToFetch) {
-                    const res = await fetch(`https://opentdb.com/api.php?amount=${perCat}${cat === 9 ? '' : '&category='+cat}&difficulty=${diff}&type=multiple`);
-                    const data = await res.json();
-                    if(data.results) {
-                        for (let q of data.results) {
-                            gameState.questions.push({ mode: 'MC', question: `WISSENS-CHECK: ${await translateText(q.question)}`, correct_answer: await translateText(q.correct_answer), incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a))) });
-                        }
+                const triviaCount = 5;
+                const res = await fetch(`https://opentdb.com/api.php?amount=${triviaCount}${catsToFetch[0] === 9 ? '' : '&category='+catsToFetch[0]}&difficulty=${diff}&type=multiple`);
+                const data = await res.json();
+                if(data.results) {
+                    for (let q of data.results) {
+                        gameState.questions.push({ mode: 'MC', question: `WISSENS-CHECK: ${await translateText(q.question)}`, correct_answer: await translateText(q.correct_answer), incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a))) });
                     }
                 }
-                gameState.questions.push(...await generateCustomQuestions());
-                gameState.questions.sort(() => Math.random() - 0.5); gameState.questions = gameState.questions.slice(0, count);
+                
+                // Fetch 5 Geo questions
+                const geoQs = await generateCustomQuestions();
+                gameState.questions.push(...geoQs);
+                
+                // Shuffle and finalize
+                gameState.questions.sort(() => Math.random() - 0.5);
+                gameState.questions = gameState.questions.slice(0, 10);
+                
                 gameState.status = 'PLAYING'; gameState.currentIndex = 0; gameState.isLoading = false; resetReadiness(); sync();
             } catch (e) { gameState.isLoading = false; sync(); alert("API Fehler!"); }
         }
@@ -658,39 +682,16 @@
                 if (isHost) document.getElementById('host-next').classList.remove('hidden');
             } else {
                 document.getElementById('resolution').classList.add('hidden');
-                const pu = gameState.powerups[myId] || { used: {} }; const currentBet = gameState.bets[myId] || { val: 0 };
-                const sidebarInject = `
-                    <div class="flex flex-col gap-4 mb-8 bg-black/40 p-6 rounded-2xl border-2 border-white/10">
-                        <div class="flex justify-between items-center"><span class="text-xs font-bold uppercase text-orange-500">Einsatz:</span>
-                            <div class="flex gap-2">
-                                <button onclick="setBet(0)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 0 ? 'bg-orange-500' : ''}">0</button>
-                                <button onclick="setBet(50)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 50 ? 'bg-orange-500' : ''}">50</button>
-                                <button onclick="setBet(100)" class="px-3 py-1 bg-white/10 rounded text-xs ${currentBet.val === 100 ? 'bg-orange-500' : ''}">100</button>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center border-t border-white/5 pt-4">
-                            <span class="text-xs font-bold uppercase text-cyan-400">Power-Ups:</span>
-                            <div class="flex gap-4">
-                                <button onclick="usePU('5050')" class="powerup-btn ${!pu.used['5050'] ? 'active' : 'used'}">🌓</button>
-                                <button onclick="usePU('double')" class="powerup-btn ${!pu.used['double'] ? 'active' : 'used'}">🚀</button>
-                                <button onclick="usePU('shield')" class="powerup-btn ${!pu.used['shield'] ? 'active' : 'used'}">🛡️</button>
-                            </div>
-                        </div>
-                    </div>`;
-                if(!document.getElementById('game-tools')) { const tools = document.createElement('div'); tools.id = 'game-tools'; document.getElementById('screen-quiz').insertBefore(tools, document.getElementById('screen-quiz').firstChild); }
-                document.getElementById('game-tools').innerHTML = sidebarInject;
                 if (q.mode === 'IMG') { document.getElementById('image-container').classList.remove('hidden'); document.getElementById('question-image').src = proxify(q.image); renderMC(q); }
                 else { renderMC(q); }
             }
         }
 
-        function setBet(v) { if(isHost) handleData({ type: 'BET', val: v, betType: 'points' }, { peer: myId }); else connections[0].send({ type: 'BET', val: v, betType: 'points' }); }
-        function usePU(type) { if(gameState.powerups[myId].used[type]) return; if(isHost) handleData({ type: 'POWERUP', pu: type }, { peer: myId }); else connections[0].send({ type: 'POWERUP', pu: type }); if(type === '5050') { const buttons = Array.from(document.querySelectorAll('.paper-note')); const q = gameState.questions[gameState.currentIndex]; buttons.filter(b => b.innerHTML !== q.correct_answer).sort(() => Math.random() - 0.5).slice(0, 2).forEach(b => b.style.display = 'none'); } }
         function renderMC(q) { const mc = document.getElementById('mc-area'); mc.classList.remove('hidden'); if (mc.dataset.rd != gameState.currentIndex) { mc.dataset.rd = gameState.currentIndex; mc.innerHTML = ''; [...(q.incorrect_answers || []), q.correct_answer].sort(() => Math.random() - 0.5).forEach(o => { const b = document.createElement('button'); b.className = "paper-note cursor-pointer"; b.style.setProperty('--rotation', `${Math.random() * 6 - 3}deg`); b.innerHTML = o; b.onclick = () => submitChoice(o); mc.appendChild(b); }); } }
         function triggerEmoji(from, emoji) { const ov = document.getElementById('emoji-display'); document.getElementById('emoji-sender').innerText = "FROM: " + from; document.getElementById('emoji-icon').innerText = emoji; ov.classList.add('opacity-100'); setTimeout(() => ov.classList.remove('opacity-100'), 1500); }
         function sendEmoji(e) { if (isHost) handleData({ type: 'REACTION', from: myName, emoji: e }, { peer: myId }); connections.forEach(c => c.send({ type: 'REACTION', from: myName, emoji: e })); if (!isHost) triggerEmoji(myName, e); }
         function nextRound() { gameState.currentIndex++; if (gameState.currentIndex >= gameState.questions.length) gameState.status = 'RESULTS'; else resetReadiness(); sync(); }
-        function resetReadiness() { gameState.showResolution = false; gameState.bets = {}; Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); }
+        function resetReadiness() { gameState.showResolution = false; Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); }
         function renderFinal() {
             document.getElementById('screen-quiz').classList.add('hidden'); document.getElementById('screen-results').classList.remove('hidden');
             document.getElementById('podium').innerHTML = Object.values(gameState.players).sort((a, b) => b.score - a.score).map((p, i) => `<div class="flex justify-between chalk-card p-4 rounded-xl mb-2"><span class="text-xl">#${i + 1} ${p.name}</span><span class="text-xl text-yellow-500">${p.score}</span></div>`).join('');
