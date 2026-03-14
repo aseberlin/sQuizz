@@ -222,7 +222,7 @@
                 <div class="flex-1 flex flex-col items-center justify-center max-w-5xl mx-auto w-full">
                     <div id="arena-media" class="relative group hidden">
                         <div class="p-4 bg-gradient-to-br from-gold via-[#b8860b] to-gold rounded-sm shadow-2xl">
-                            <div class="bg-background-dark p-1 border-2 border-black/40">
+                            <div id="q-image-inner" class="bg-background-dark p-1 border-2 border-black/40">
                                 <div class="relative aspect-video w-[600px] lg:w-[800px] overflow-hidden">
                                     <img id="q-image" class="w-full h-full object-cover" src="">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
@@ -523,7 +523,11 @@
                         qData = { mode: 'IMG', image: imgUrl, question: "Landmark Check: Identify this world wonder.", correct_answer: s.name, incorrect_answers: spots.filter(x => x.name !== s.name).map(x => x.name).slice(0,3) };
                     }
                 } else {
-                    qData = { mode: 'MC', question: "Generic: What is 2+2?", correct_answer: "4", incorrect_answers: ["3", "5", "6"] };
+                    const a = Math.floor(Math.random() * 15) + 2;
+                    const b = Math.floor(Math.random() * 10) + 2;
+                    const c = Math.floor(Math.random() * 20) + 2;
+                    const ans = a * (b * c);
+                    qData = { mode: 'MC', question: `Quick Math: What is <span class="text-primary">${a} * (${b} * ${c})</span>?`, correct_answer: ans.toString(), incorrect_answers: [(ans + 10).toString(), (ans - 5).toString(), (ans * 1.1).toFixed(0)] };
                 }
                 
                 if (qData) {
@@ -654,6 +658,12 @@
             document.getElementById('q-text').innerHTML = q.question;
             
             if(q.mode === 'IMG') {
+                const inner = document.getElementById('q-image-inner');
+                if (q.question.includes("Outline Oracle")) {
+                    inner.classList.remove('bg-background-dark');
+                } else {
+                    inner.classList.add('bg-background-dark');
+                }
                 document.getElementById('arena-media').classList.remove('hidden');
                 document.getElementById('q-image').src = q.image;
             } else {
