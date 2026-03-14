@@ -1,748 +1,848 @@
 <!DOCTYPE html>
-<html lang="de">
-
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JizzQuiz Multiverse - Stable Edition</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>sQuizz</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Arvo:wght@400;700&family=VT323&family=Outfit:wght@300;400;700;900&display=swap"
-        rel="stylesheet">
-    <style>
-        :root {
-            --pub-wood: #1a0f08;
-            --pub-accent: #b45309;
-            --pub-paper: #fdf6e3;
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                        "wood-light": "#3d2b1f",
+                        "wood-dark": "#1a120e",
+                        "parchment": "#f1e7d0",
+                        "gold": "#d4af37",
+                        "sage-green": "#8a9a5b",
+                        "brick-red": "#a25b4b",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
         }
-
-        /* --- THEMES --- */
-        body.theme-normal {
-            background-color: var(--pub-wood);
-            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
-            color: #d1d5db;
-            font-family: 'Arvo', serif;
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            .wanted-border { border: 8px double #4a3728; }
+            .ledger-table { border-collapse: separate; border-spacing: 0 8px; }
+            .ledger-cell { @apply px-4 py-3 text-sm transition-colors; }
+            .correct-answer { background-color: rgba(138, 154, 91, 0.2); color: #4a542f; border: 1px solid rgba(138, 154, 91, 0.4); }
+            .incorrect-answer { background-color: rgba(162, 91, 75, 0.2); color: #5d342b; border: 1px solid rgba(162, 91, 75, 0.4); }
         }
-
-        .theme-normal .chalk-card {
-            background: #1e293b;
-            border: 4px solid #334155;
-            background-image: url('https://www.transparenttextures.com/patterns/black-linen.png');
-            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5);
-        }
-
-        .theme-normal .paper-note {
-            background: #fffef0;
-            color: #1a1a1a;
-            border: 1px solid #d1d5db;
-            clip-path: polygon(1% 2%, 99% 1%, 97% 98%, 2% 96%);
-            transform: rotate(var(--rotation));
-        }
-
-        .theme-normal .paper-note.active-choice {
-            background: #ffec99 !important;
-            border: 3px solid #b45309 !important;
-            transform: scale(1.1) rotate(0deg) !important;
-            z-index: 50;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        }
-
-        body.theme-c64 {
-            background-color: #0000aa;
-            color: #ffffff;
-            font-family: 'VT323', monospace;
-            text-transform: uppercase;
-        }
-
-        .theme-c64 .chalk-card {
-            background: #5555ff;
-            border: 10px double #ffffff;
-            box-shadow: 15px 15px 0px #000;
-        }
-
-        .theme-c64 .paper-note {
-            background: #0000aa;
-            color: #fff;
-            border: 4px solid #fff;
-            transform: none !important;
-            box-shadow: 8px 8px 0px #000;
-            clip-path: none;
-            font-size: 1.5rem;
-        }
-
-        .theme-c64 .paper-note.active-choice {
-            background: #ffffff !important;
-            color: #0000aa !important;
-            border: 6px solid #000 !important;
-            transform: scale(1.1) !important;
-        }
-
-        .theme-c64 .turf-track {
-            background: #00aa00;
-            border: 4px solid #fff;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 48px, #ffffff 50px);
-        }
-
-        body.theme-lsd {
-            background: #000;
-            animation: lsd-pulse 5s infinite linear;
-            font-family: 'Permanent Marker', cursive;
-        }
-
-        @keyframes lsd-pulse {
-            0% {
-                background: #f0f;
-                filter: hue-rotate(0deg);
-            }
-
-            50% {
-                background: #0ff;
-                filter: hue-rotate(180deg);
-            }
-
-            100% {
-                background: #f0f;
-                filter: hue-rotate(360deg);
-            }
-        }
-
-        .theme-lsd .paper-note {
-            background: rgba(0, 0, 0, 0.8);
-            color: #0f0;
-            border: 5px solid #f0f;
-            animation: glow-lsd 1s infinite alternate;
-            transform: skew(-5deg) !important;
-        }
-
-        .theme-lsd .paper-note.active-choice {
-            background: #fff !important;
-            color: #000 !important;
-            box-shadow: 0 0 100px #fff !important;
-            transform: scale(1.2) rotate(0deg) !important;
-        }
-
-        body.theme-urban {
-            background-color: #1a1a1a;
-            background-image:
-                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-            color: #e2e8f0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .theme-urban .chalk-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
-            border-radius: 0;
-        }
-
-        .theme-urban .paper-note {
-            background: #262626;
-            color: #00f2ff;
-            border: 1px solid #00f2ff;
-            clip-path: none;
-            transform: none !important;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.3s;
-        }
-
-        .theme-urban .paper-note.active-choice {
-            background: #00f2ff !important;
-            color: #000 !important;
-            box-shadow: 0 0 30px #00f2ff !important;
-            transform: scale(1.05) !important;
-        }
-
-        .theme-urban h1 {
-            color: #fefe00;
-            font-family: 'Inter', sans-serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -0.05em;
-        }
-
-        .theme-urban .turf-track {
-            background: #111;
-            border: 2px solid #333;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 49px, #444 50px);
-        }
-
-        body.theme-solaris {
-            background-color: #050505;
-            background-image:
-                radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050505 100%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
-            color: #f1f5f9;
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .theme-solaris .chalk-card {
-            background: rgba(15, 10, 25, 0.4);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
-            border-radius: 24px;
-        }
-
-        .theme-solaris .paper-note {
-            background: rgba(255, 255, 255, 0.03);
-            color: #d4af37;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            clip-path: none;
-            transform: none !important;
-            font-weight: 500;
-            text-transform: none;
-            letter-spacing: 0.02em;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            border-radius: 12px;
-            font-size: 1.1rem;
-        }
-
-        .theme-solaris .paper-note.active-choice {
-            background: #d4af37 !important;
-            color: #000 !important;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4) !important;
-            transform: translateY(-5px) !important;
-            border-color: #fff !important;
-        }
-
-        .theme-solaris h1 {
-            color: #d4af37;
-            background: linear-gradient(135deg, #fff 0%, #d4af37 50%, #8a6d3b 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 900;
-            letter-spacing: -0.02em;
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
-        }
-
-        .theme-solaris .turf-track {
-            background: #0a0a0a;
-            border: 1px solid #222;
-            background-image:
-                linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
-            background-size: 50px 100%;
-        }
-
-        .theme-solaris .race-horse img {
-            border: 2px solid #d4af37;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .marker {
-            font-family: 'Permanent Marker', cursive;
+        
+        .parchment-overlay {
+            position: absolute;
+            inset: 0;
+            opacity: 0.05;
+            pointer-events: none;
+            mix-blend-overlay: overlay;
+            background-image: url('https://www.transparenttextures.com/patterns/papyros.png');
         }
 
         .race-horse {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
             transition: left 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 20;
         }
 
-        .race-horse img {
-            width: 45px;
-            height: 45px;
-            border: 2px solid white;
-            border-radius: 4px;
-            background: #000;
+        .avatar-option {
+            @apply cursor-pointer rounded-xl border-4 border-transparent transition-all hover:scale-105;
+        }
+        .avatar-option.selected {
+            @apply border-primary shadow-2xl shadow-primary/40 scale-110 bg-primary/20;
         }
 
-        .tally-mark {
-            width: 4px;
-            height: 16px;
-            border-radius: 2px;
-            display: inline-block;
-            margin-right: 2px;
-        }
-
-        .tally-green {
-            background: #22c55e;
-        }
-
-        .tally-red {
-            background: #ef4444;
-        }
-
-        .c64-boot {
-            position: fixed;
-            inset: 0;
-            background: #4444ff;
-            z-index: 2000;
-            padding: 40px;
-            font-family: 'VT323', monospace;
-            color: #ccccff;
-            font-size: 2.5rem;
-        }
-
-        .cursor {
-            width: 20px;
-            height: 30px;
-            background: #ccccff;
-            display: inline-block;
-            animation: blink 0.8s infinite;
-        }
-
-        @keyframes blink {
-
-            0%,
-            49% {
-                opacity: 1;
-            }
-
-            50%,
-            100% {
-                opacity: 0;
-            }
-        }
-
-        .receipt-paper {
-            background: #fff;
-            color: #000;
-            padding: 40px 20px;
-            font-family: monospace;
-            box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.6);
-            position: relative;
-        }
-
-        .cat-chip {
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .cat-chip.selected {
-            background: var(--pub-accent);
-            border-color: white;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .animate-throw {
-            animation: throwOut 0.8s forwards ease-in;
-            pointer-events: none;
-        }
-
-        @keyframes throwOut {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(600px, -400px) rotate(720deg);
-                opacity: 0;
-            }
+        .turf-pattern {
+            background-color: #2d5a27;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.1) 50px, rgba(255,255,255,0.1) 51px);
         }
     </style>
 </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-500">
 
-<body class="theme-normal min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700">
-
-    <div id="loading-screen" class="hidden c64-boot">
-        <p>**** COMMODORE 64 BASIC V2 ****</p>
-        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-        <br>
-        <p>READY.</p>
-        <p id="boot-cmd"></p>
-        <p id="boot-status"></p>
+<div id="app" class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+    <!-- State: BOOTING -->
+    <div id="screen-booting" class="flex flex-col items-center justify-center min-h-screen bg-wood-dark text-white p-8">
+        <div class="size-24 bg-primary rounded-3xl shadow-2xl flex items-center justify-center mb-8 animate-bounce">
+            <span class="material-symbols-outlined text-6xl">public</span>
+        </div>
+        <h1 class="text-6xl font-black uppercase tracking-tighter italic mb-4">sQuizz</h1>
+        <p class="text-primary font-bold tracking-[0.5em] uppercase text-sm animate-pulse">Initializing Tavern Engine...</p>
     </div>
 
-    <div id="emoji-display"
-        class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[1500] opacity-0 pointer-events-none transition-opacity duration-300">
-        <p id="emoji-sender" class="text-xs text-white mb-2 uppercase font-sans tracking-widest"></p>
-        <span id="emoji-icon" class="text-9xl drop-shadow-2xl"></span>
-    </div>
-
-    <main class="w-full lg:w-2/3 p-4 lg:p-8 flex flex-col items-center overflow-y-auto min-h-screen">
-        <header class="text-center mb-6">
-            <h1 class="text-6xl marker text-orange-800 drop-shadow-lg italic">JizzQuiz</h1>
-            <p id="room-status" class="text-[9px] uppercase tracking-[0.5em] opacity-40 italic">System V2026.Stable</p>
+    <!-- State: LOBBY -->
+    <div id="screen-lobby" class="hidden flex flex-col h-full grow">
+        <header class="flex items-center justify-between border-b border-primary/20 px-6 py-4 bg-wood-dark text-white shadow-xl">
+            <div class="flex items-center gap-4">
+                <div class="size-8 flex items-center justify-center bg-primary rounded-lg">
+                    <span class="material-symbols-outlined text-white text-2xl">public</span>
+                </div>
+                <div>
+                    <h2 class="text-white text-xl font-black">sQuizz</h2>
+                </div>
+            </div>
+            <div id="lobby-id-display" class="hidden md:flex flex-col items-end">
+                <p class="text-[10px] text-primary font-black uppercase">Room Code</p>
+                <p id="room-id-text" class="text-white font-mono font-bold text-lg select-all">...</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="toggleTheme()" class="rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+            </div>
         </header>
 
-        <div id="race-container" class="w-full max-w-4xl mb-8 hidden">
-            <div class="turf-track h-[70px] relative rounded-lg shadow-2xl bg-[#22543d] border-4 border-[#1a3a3a] overflow-hidden"
-                style="background-image: repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(255,255,255,0.15) 50px);">
-                <div id="race-lane" class="w-full h-full relative px-10"></div>
-            </div>
-        </div>
-
-        <div id="screen-lobby" class="w-full max-w-md space-y-6">
-            <div class="chalk-card p-8 rounded-xl">
-                <input type="text" id="username" placeholder="Name..."
-                    class="w-full bg-black/40 p-4 rounded-lg border border-white/10 text-3xl focus:border-orange-800 outline-none text-center font-bold mb-6">
-                <div id="avatar-grid" class="flex justify-center flex-wrap gap-2 mb-6"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startHost()"
-                        class="bg-orange-800 text-white py-4 rounded-xl font-bold uppercase shadow-lg">Host</button>
-                    <button onclick="document.getElementById('join-box').classList.toggle('hidden')"
-                        class="bg-zinc-800 py-4 rounded-xl font-bold uppercase">Join</button>
+        <main class="flex flex-1 overflow-hidden">
+            <aside class="hidden md:flex w-72 flex-col bg-wood-dark/95 border-r border-primary/10 p-6 gap-8 shadow-2xl">
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-primary text-xs font-black uppercase tracking-[0.1em]">Game Status</h3>
+                    <p id="room-status-text" class="text-slate-400 text-sm font-medium">Waiting for Host...</p>
                 </div>
-                <div id="join-box" class="hidden mt-6 pt-6 border-t border-white/10 space-y-4">
-                    <input type="text" id="join-id" placeholder="Code..."
-                        class="w-full bg-black/20 p-3 rounded-xl border border-gray-700 text-center font-mono">
-                    <button onclick="joinGame()"
-                        class="w-full bg-emerald-800 py-3 rounded-xl font-bold uppercase">Connect</button>
-                </div>
-            </div>
-
-            <div id="host-config" class="hidden chalk-card p-8 rounded-xl text-center">
-                <div onclick="copyRoomId()"
-                    class="bg-black/20 p-4 rounded-xl mb-6 cursor-pointer border border-white/10 text-white">
-                    <span id="display-id" class="text-4xl font-mono font-bold tracking-tighter">...</span>
-                </div>
-
-                <div class="mb-6">
-                    <p
-                        class="text-[10px] uppercase font-bold text-orange-500 mb-3 tracking-widest italic text-left ml-2">
-                        Themen-Mix:</p>
-                    <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mb-8">
-                    <select id="cfg-count" class="bg-black border border-white/10 rounded-lg p-3 text-white">
-                        <option value="3">3 FRAGEN</option>
-                        <option value="5" selected>5 FRAGEN</option>
-                    </select>
-                    <select id="cfg-diff"
-                        class="bg-black border border-white/10 rounded-lg p-3 text-orange-500 font-bold uppercase">
-                        <option value="medium">ATZE</option>
-                        <option value="hard">LEGENDE</option>
-                    </select>
-                </div>
-                <button onclick="initiateQuiz()"
-                    class="bg-orange-800 w-full py-6 rounded-2xl text-3xl font-black uppercase italic shadow-2xl">ZÜNDEN!
-                    🍻</button>
-            </div>
-        </div>
-
-        <div id="screen-quiz" class="hidden w-full max-w-4xl">
-            <div id="quiz-progress" class="marker text-orange-600 text-3xl italic mb-6 px-4">...</div>
-            <div class="text-center px-4">
-                <div id="image-container" class="mb-8 hidden flex justify-center">
-                    <img id="question-image" referrerpolicy="no-referrer"
-                        class="mx-auto rounded-xl border-4 border-white shadow-2xl max-h-52 bg-white p-2 object-contain"
-                        src="">
-                </div>
-                <h2 id="question-text"
-                    class="text-3xl lg:text-5xl font-bold mb-12 text-white leading-tight drop-shadow-lg">...</h2>
-                <div id="mc-area" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
-                <div id="ghost-area" class="hidden max-w-md mx-auto">
-                    <div id="ghost-sequence" class="flex justify-center gap-3 mb-8"></div>
-                    <input type="text" id="ghost-input"
-                        class="bg-black border-4 border-orange-800 p-6 text-4xl text-center w-full rounded-xl mb-6 uppercase">
-                    <button onclick="submitChoice(document.getElementById('ghost-input').value)"
-                        class="bg-orange-800 px-10 py-4 rounded-xl font-black uppercase text-xl">Bestätigen</button>
-                </div>
-            </div>
-
-            <div id="resolution"
-                class="hidden mt-10 p-10 chalk-card rounded-[2rem] text-center relative overflow-hidden transition-all">
-                <p id="personal-feedback" class="text-2xl font-bold mb-4 uppercase"></p>
-                <h3 id="correct-text"
-                    class="text-4xl lg:text-6xl font-black text-white mb-8 italic underline decoration-orange-700"></h3>
-                <p id="sauf-text" class="text-xl text-yellow-500 font-bold mb-10 italic"></p>
-                <button id="host-next" onclick="nextRound()"
-                    class="hidden bg-white text-black px-16 py-4 rounded-xl font-black text-xl uppercase shadow-2xl mx-auto block hover:scale-105 transition">Nächste
-                    Runde ➔</button>
-            </div>
-        </div>
-
-        <div id="screen-results" class="hidden w-full max-w-2xl pb-20">
-            <h2 class="text-7xl marker text-orange-800 mb-10 text-center italic">ABRECHNUNG!</h2>
-            <div id="podium" class="space-y-4 mb-16"></div>
-            <div class="receipt-paper">
-                <h3 class="text-xl font-bold mb-6 text-center border-b-2 border-black pb-2 uppercase">SÜNDENREGISTER
-                </h3>
-                <div id="summary-table" class="space-y-4"></div>
-            </div>
-        </div>
-    </main>
-
-    <aside class="w-full lg:w-1/3 bg-black/40 p-6 flex flex-col border-t lg:border-t-0 lg:border-l border-white/5">
-        <div class="mb-8 p-4 chalk-card rounded-xl">
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="setTheme('theme-solaris')"
-                    class="bg-zinc-900 py-2 rounded text-[10px] font-bold uppercase border border-amber-500 text-amber-500 col-span-2">Solaris</button>
-                <button onclick="setTheme('theme-urban')"
-                    class="bg-zinc-700 py-2 rounded text-[10px] font-bold uppercase border border-cyan-400">Urban</button>
-                <button onclick="setTheme('theme-normal')"
-                    class="bg-zinc-800 py-2 rounded text-[10px] font-bold uppercase">Pub</button>
-                <button onclick="setTheme('theme-c64')"
-                    class="bg-blue-800 py-2 rounded text-[10px] font-bold uppercase">C64</button>
-                <button onclick="setTheme('theme-lsd')"
-                    class="bg-gradient-to-r from-purple-500 to-pink-500 py-2 rounded text-[10px] font-bold uppercase">LSD</button>
-            </div>
-        </div>
-        <h3 class="text-lg font-black uppercase text-orange-800 mb-2 text-center tracking-widest italic">Stammtisch</h3>
-        <p id="ready-count" class="text-center text-[10px] opacity-40 mb-6 font-mono tracking-widest">0/0 BEREIT</p>
-        <div id="player-list" class="flex-grow space-y-4 overflow-y-auto pr-2 custom-scrollbar"></div>
-        <div class="mt-6 pt-6 border-t border-white/10 grid grid-cols-5 gap-2">
-            <button onclick="sendEmoji('🍻')" class="text-2xl hover:scale-125 transition">🍻</button>
-            <button onclick="sendEmoji('🥃')" class="text-2xl hover:scale-125 transition">🥃</button>
-            <button onclick="sendEmoji('⚽')" class="text-2xl hover:scale-125 transition">⚽</button>
-            <button onclick="sendEmoji('🤮')" class="text-2xl hover:scale-125 transition">🤮</button>
-            <button onclick="sendEmoji('🤡')" class="text-2xl hover:scale-125 transition">🤡</button>
-            <button onclick="sendEmoji('🔥')" class="text-2xl hover:scale-125 transition">🔥</button>
-            <button onclick="sendEmoji('🚬')" class="text-2xl hover:scale-125 transition">🚬</button>
-            <button onclick="sendEmoji('💩')" class="text-2xl hover:scale-125 transition">💩</button>
-            <button onclick="sendEmoji('🏆')" class="text-2xl hover:scale-125 transition">🏆</button>
-            <button onclick="sendEmoji('🥨')" class="text-2xl hover:scale-125 transition">🥨</button>
-        </div>
-    </aside>
-
-    <script>
-        let peer, myId, myName, myAvatarIdx = 0, connections = [], isHost = false;
-        let gameState = { players: {}, questions: [], currentIndex: 0, status: 'LOBBY', showResolution: false, history: [], isLoading: false };
-
-        const TRIVIA_CATS = [
-            { id: 9, name: "Gemischt" }, { id: 11, name: "Film" }, { id: 12, name: "Musik" },
-            { id: 15, name: "Games" }, { id: 17, name: "Natur" }, { id: 18, name: "Computer" },
-            { id: 21, name: "Sport" }, { id: 23, name: "Historie" }, { id: 24, name: "Politik" }, { id: 26, name: "Promis" }
-        ];
-        let selectedCats = [9];
-
-        function setTheme(theme) { document.body.className = theme + ' min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700'; localStorage.setItem('jizzquiz_theme', theme); }
-        setTheme(localStorage.getItem('jizzquiz_theme') || 'theme-solaris');
-
-        function proxify(url) { return url ? `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=500&output=png` : ''; }
-
-        async function translateText(text) {
-            if (!text) return "";
-            try {
-                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=de&dt=t&q=${encodeURIComponent(text)}`);
-                const data = await res.json(); return data[0][0][0];
-            } catch (e) { return text; }
-        }
-
-        // UI INIT
-        const AVATAR_SEEDS = ['Abe', 'Buster', 'Clyde', 'Zack', 'Fritz', 'Hulk', 'Bier', 'Pferd'];
-        const avatarGrid = document.getElementById('avatar-grid');
-        AVATAR_SEEDS.forEach((seed, idx) => {
-            const img = document.createElement('img'); img.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seed}`;
-            img.className = `avatar-option p-1 bg-white/5 w-[40px] cursor-pointer rounded ${idx === 0 ? 'selected' : ''}`;
-            img.onclick = () => { document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected')); img.classList.add('selected'); myAvatarIdx = idx; };
-            avatarGrid.appendChild(img);
-        });
-
-        const catGrid = document.getElementById('category-grid');
-        TRIVIA_CATS.forEach(cat => {
-            const chip = document.createElement('div'); chip.className = `cat-chip ${cat.id === 9 ? 'selected' : ''}`;
-            chip.innerText = cat.name;
-            chip.onclick = () => {
-                if (cat.id === 9) { selectedCats = [9]; document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected')); chip.classList.add('selected'); return; }
-                const idx = selectedCats.indexOf(cat.id);
-                if (idx > -1) { selectedCats.splice(idx, 1); chip.classList.remove('selected'); }
-                else { selectedCats.push(cat.id); chip.classList.add('selected'); document.querySelector('.cat-chip').classList.remove('selected'); const gIdx = selectedCats.indexOf(9); if (gIdx > -1) selectedCats.splice(gIdx, 1); }
-                if (selectedCats.length === 0) { selectedCats = [9]; document.querySelector('.cat-chip').classList.add('selected'); }
-            };
-            catGrid.appendChild(chip);
-        });
-
-        const FOOTBALL_POOL = [
-            { mode: 'IMG', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/512px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png', question: "WELCHER KLUB?", correct_answer: "FC Bayern München", incorrect_answers: ["Augsburg", "Mainz", "Bochum"] },
-            { mode: 'IMG', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/512px-Borussia_Dortmund_logo.svg.png', question: "WELCHER KLUB?", correct_answer: "Borussia Dortmund", incorrect_answers: ["Schalke", "Bochum", "Essen"] }
-        ];
-
-        function init() {
-            peer = new Peer();
-            peer.on('open', id => { myId = id; document.getElementById('display-id').innerText = id; });
-            peer.on('connection', c => { c.on('open', () => { connections.push(c); c.on('data', d => handleData(d, c)); }); });
-        }
-
-        function startHost() {
-            myName = document.getElementById('username').value.trim() || "Host"; isHost = true;
-            document.getElementById('host-config').classList.remove('hidden');
-            gameState.players[myId] = { name: myName, avatar: AVATAR_SEEDS[myAvatarIdx], score: 0, lastPoints: 0, ready: false, tally: [] }; sync();
-        }
-
-        function joinGame() {
-            myName = document.getElementById('username').value.trim() || "Gast";
-            const hId = document.getElementById('join-id').value.trim(); const c = peer.connect(hId);
-            c.on('open', () => { connections.push(c); c.send({ type: 'JOIN', name: myName, avatar: AVATAR_SEEDS[myAvatarIdx] }); });
-            c.on('data', handleData);
-        }
-
-        function handleData(data, conn) {
-            if (data.type === 'JOIN') { gameState.players[conn.peer] = { name: data.name, avatar: data.avatar, score: 0, lastPoints: 0, ready: false, tally: [] }; sync(); }
-            if (data.type === 'SYNC') { gameState = data.state; updateUI(); }
-            if (data.type === 'SUBMIT') { const p = gameState.players[conn.peer]; p.ready = true; p.lastChoice = data.choice; checkAllReady(); }
-            if (data.type === 'REACTION') triggerEmoji(data.from, data.emoji);
-            if (data.type === 'BOOT_START') runGlobalBootSequence();
-        }
-
-        function checkAllReady() {
-            if (!isHost) return;
-            const all = Object.values(gameState.players);
-            if (all.every(p => p.ready)) {
-                const q = gameState.questions[gameState.currentIndex];
-                let roundsCorrect = 0;
-                all.forEach(p => {
-                    const pInput = (p.lastChoice || "").toString().trim().toUpperCase();
-                    const isCorrect = (q.mode === 'GHOST') ? (pInput === q.correct_answer.split('').reverse().join('')) : (pInput === q.correct_answer.toUpperCase());
-                    p.lastPoints = isCorrect ? 100 : 0; p.score += p.lastPoints;
-                    p.tally.push(isCorrect ? 'green' : 'red');
-                    if (isCorrect) roundsCorrect++;
-                });
-                gameState.saufText = roundsCorrect === 0 ? "TOTALAUSFALL! Alle bechern!" : (roundsCorrect === 1 ? "STREBER! Rest trinkt!" : "Puh, Safe.");
-                gameState.history.push({ q: q.question, ans: q.correct_answer, players: JSON.parse(JSON.stringify(gameState.players)) });
-                gameState.showResolution = true;
-            }
-            sync();
-        }
-
-        function submitChoice(val) {
-            if (isHost) handleData({ type: 'SUBMIT', choice: val }, { peer: myId });
-            else connections[0].send({ type: 'SUBMIT', choice: val });
-            const all = document.querySelectorAll('.paper-note');
-            all.forEach(b => { b.disabled = true; if (b.innerHTML === val) b.classList.add('active-choice'); else { b.style.opacity = "0.3"; b.style.filter = "grayscale(100%)"; } });
-        }
-
-        function sync() { if (!isHost) return; updateUI(); connections.forEach(c => c.send({ type: 'SYNC', state: gameState })); }
-
-        function updateUI() {
-            document.getElementById('loading-screen').classList.toggle('hidden', !gameState.isLoading);
-            const maxScore = Math.max(...Object.values(gameState.players).map(p => p.score), 1);
-            const leaderId = Object.keys(gameState.players).reduce((a, b) => gameState.players[a].score > gameState.players[b].score ? a : b, Object.keys(gameState.players)[0]);
-
-            document.getElementById('race-container').classList.toggle('hidden', gameState.status !== 'PLAYING');
-            document.getElementById('race-lane').innerHTML = Object.values(gameState.players).map(p => {
-                const pos = Math.min((p.score / (maxScore + 150)) * 90, 95);
-                return `<div class="race-horse" style="left: ${pos}%"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}"></div>`;
-            }).join('');
-
-            document.getElementById('player-list').innerHTML = Object.entries(gameState.players).sort((a, b) => b[1].score - a[1].score).map(([id, p]) => `
-            <div class="p-4 chalk-card rounded-xl border-l-8 ${p.ready ? 'border-green-500' : 'border-zinc-700'} relative">
-                <div class="flex items-center gap-4 relative z-10">
-                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}" class="w-10 h-10 rounded bg-black">
-                    <div class="flex-grow">
-                        <p class="text-[10px] font-black uppercase">${p.name} ${id === leaderId && p.score > 0 ? '👓' : ''}</p>
-                        <p class="text-xl font-black text-orange-600">${p.score}</p>
-                        <div class="flex flex-wrap gap-1 mt-1">${(p.tally || []).map(t => `<div class="tally-mark tally-${t}"></div>`).join('')}</div>
+                <nav class="flex flex-col gap-2">
+                    <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 cursor-pointer">
+                        <span class="material-symbols-outlined text-sm">group</span>
+                        <span class="text-sm font-bold">Lobby Members</span>
+                    </div>
+                </nav>
+                <div id="p2p-info" class="mt-auto pt-6 border-t border-primary/10">
+                    <div class="bg-primary/10 p-4 rounded-xl border border-primary/20">
+                        <p class="text-[10px] text-primary font-black uppercase mb-1">Status</p>
+                        <p id="p2p-status-text" class="text-white text-xs font-mono">Connecting...</p>
                     </div>
                 </div>
-            </div>`).join('');
+            </aside>
 
-            document.getElementById('ready-count').innerText = `${Object.values(gameState.players).filter(p => p.ready).length}/${Object.keys(gameState.players).length} BEREIT`;
-            if (gameState.status === 'PLAYING') renderArena();
-            if (gameState.status === 'RESULTS') renderFinal();
-        }
+            <div class="flex-1 flex flex-col bg-wood-light/90 relative overflow-y-auto">
+                <div class="parchment-overlay"></div>
+                <div class="p-8 max-w-5xl mx-auto w-full">
+                    <div class="mb-12 text-center md:text-left">
+                        <span class="bg-primary/20 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest mb-2 inline-block">Lobby Setup</span>
+                        <h1 class="text-5xl font-black text-white italic"><span class="text-primary">sQuizz-Stammtisch</span></h1>
+                    </div>
 
-        async function initiateQuiz() {
-            connections.forEach(c => c.send({ type: 'BOOT_START' })); await runGlobalBootSequence();
-            gameState.isLoading = true; sync(); await typeBoot();
-            const count = parseInt(document.getElementById('cfg-count').value);
-            const triviaAmount = Math.max(0, count - 2); // Reservoir for Special (Football/Ghost)
-            const diff = document.getElementById('cfg-diff').value;
-            const targetCat = selectedCats[Math.floor(Math.random() * selectedCats.length)];
-            const catUrl = targetCat === 9 ? '' : `&category=${targetCat}`;
+                    <div id="player-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                        <!-- Players injected here -->
+                    </div>
 
-            try {
-                const res = await fetch(`https://opentdb.com/api.php?amount=${triviaAmount}${catUrl}&difficulty=${diff}&type=multiple`);
-                const data = await res.json();
-                gameState.questions = [];
-                for (let q of data.results) {
-                    gameState.questions.push({
-                        mode: 'MC', question: await translateText(q.question),
-                        correct_answer: await translateText(q.correct_answer),
-                        incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a)))
-                    });
-                }
-                gameState.questions.splice(1, 0, FOOTBALL_POOL[Math.floor(Math.random() * FOOTBALL_POOL.length)]);
-                gameState.questions.push({ mode: 'GHOST', question: "CODE MERKEN!", correct_answer: Math.floor(1000 + Math.random() * 8999).toString() });
-                gameState.status = 'PLAYING'; gameState.currentIndex = 0; gameState.isLoading = false; resetReadiness(); sync();
-            } catch (e) { gameState.isLoading = false; sync(); alert("API Fehler! Bitte Seite neu laden."); }
-        }
+                    <div id="lobby-controls" class="bg-wood-dark/80 rounded-3xl p-8 border border-primary/10 shadow-xl">
+                        <div class="grid md:grid-cols-2 gap-12 items-center">
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-primary text-xs font-black uppercase mb-2">Nickname</label>
+                                    <input type="text" id="input-nickname" class="w-full bg-wood-light border-2 border-primary/20 focus:border-primary focus:ring-0 text-white font-bold px-4 py-4 rounded-xl transition-all mb-4" placeholder="Who are you?">
+                                    
+                                    <label class="block text-primary text-xs font-black uppercase mb-2">Your Signature Look</label>
+                                    <div id="avatar-grid" class="grid grid-cols-4 gap-2 mb-4">
+                                        <!-- Avatars injected here -->
+                                    </div>
+                                </div>
+                                <div id="host-only-settings" class="hidden space-y-6">
+                                    <!-- Question count hardcoded to 10 -->
+                                    <div>
+                                        <label class="block text-primary text-xs font-black uppercase mb-2">Map Selection</label>
+                                        <select id="cfg-map" class="w-full bg-wood-light border border-primary/20 text-white rounded-xl p-4 font-bold outline-none cursor-pointer">
+                                            <option value="world">Classic World Tour (Mix)</option>
+                                            <option value="europe">Old Continent (Europe Only)</option>
+                                            <option value="asia">Eastern Spirits (Asia Only)</option>
+                                            <option value="americas">New World Discovery (Americas)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <div id="host-actions" class="hidden flex flex-col gap-4">
+                                     <button onclick="initiateQuiz()" id="btn-start" class="w-full bg-primary hover:bg-primary/90 text-white font-black text-xl py-6 rounded-2xl shadow-xl shadow-primary/30 transition-all flex items-center justify-center gap-3 disabled:opacity-50">
+                                        <span class="material-symbols-outlined text-2xl">play_arrow</span>
+                                        START GAME
+                                    </button>
+                                </div>
+                                <div id="join-actions" class="flex flex-col gap-4">
+                                    <input type="text" id="input-room-id" class="w-full bg-wood-light border-2 border-primary/20 text-white font-bold px-4 py-4 rounded-xl text-center font-mono" placeholder="ENTER CODE">
+                                    <button onclick="joinGame()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-black py-4 rounded-xl uppercase">Connect to Table</button>
+                                    <button onclick="startHost()" class="w-full border-2 border-primary/50 text-primary hover:bg-primary/10 font-black py-4 rounded-xl uppercase">Host a Table</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
-        async function typeBoot() {
-            const cmd = document.getElementById('boot-cmd'); const status = document.getElementById('boot-status'); const text = 'LOAD "JizzQuiz", 8, 1';
-            cmd.innerHTML = ''; for (let char of text) { cmd.innerHTML += char; await new Promise(r => setTimeout(r, 60)); }
-            cmd.innerHTML += '<span class="cursor"></span>'; await new Promise(r => setTimeout(r, 400));
-            status.innerHTML = 'SEARCHING FOR JizzQuiz<br>LOADING<br>READY.<br>RUN<span class="cursor"></span>';
-            await new Promise(r => setTimeout(r, 1000));
-        }
+    <!-- State: ARENA -->
+    <div id="screen-arena" class="hidden flex flex-col h-screen overflow-hidden">
+        <header class="flex items-center justify-between border-b border-primary/20 bg-wood-dark px-6 py-3 shrink-0 shadow-lg text-white">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary p-1.5 rounded-lg shadow-inner">
+                    <span class="material-symbols-outlined text-white text-2xl">explore</span>
+                </div>
+                <h2 class="text-xl font-bold tracking-tight">sQuizz</h2>
+            </div>
+            
+            <div class="flex-1 max-w-2xl mx-12 hidden md:block">
+                <div id="turf-track" class="relative h-14 turf-pattern rounded-full border-4 border-wood-light overflow-hidden flex items-center px-4 shadow-2xl">
+                    <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: repeating-linear-gradient(90deg, transparent, transparent 49px, #ffffff 49px, #ffffff 51px);"></div>
+                    <div id="race-lane" class="relative w-full h-full flex items-center">
+                        <div class="absolute left-0 h-1 w-full bg-white/10"></div>
+                        <!-- Horses injected here -->
+                    </div>
+                </div>
+            </div>
 
-        async function runGlobalBootSequence() {
-            const screen = document.getElementById('loading-screen'); screen.classList.remove('hidden');
-            document.getElementById('boot-cmd').innerHTML = ''; document.getElementById('boot-status').innerHTML = '';
-        }
+            <!-- Timer removed as requested -->
+        </header>
 
-        function renderArena() {
-            document.getElementById('screen-lobby').classList.add('hidden'); document.getElementById('screen-quiz').classList.remove('hidden');
-            const q = gameState.questions[gameState.currentIndex];
-            document.getElementById('quiz-progress').innerText = `FRAGE ${gameState.currentIndex + 1} / ${gameState.questions.length}`;
-            document.getElementById('question-text').innerHTML = q.question;
-            const areas = ['mc-area', 'image-container', 'ghost-area']; areas.forEach(a => document.getElementById(a).classList.add('hidden'));
+        <div class="flex flex-1 overflow-hidden">
+            <aside class="w-80 bg-wood-dark border-r border-primary/10 flex flex-col p-6 gap-6 overflow-y-auto shrink-0 shadow-2xl">
+                <div class="space-y-1">
+                    <h3 class="text-primary font-black uppercase text-sm tracking-[0.2em] mb-2 drop-shadow-sm">GLOBAL RANKINGS</h3>
+                    <div class="flex items-center justify-between text-white/80 text-xs font-bold uppercase tracking-widest">
+                        <span>Game Progress</span>
+                        <span id="round-indicator" class="font-mono text-primary text-xl tracking-tighter">||||</span>
+                    </div>
+                </div>
+                <div id="arena-player-list" class="space-y-4">
+                    <!-- Player cards injected here -->
+                </div>
+            </aside>
 
-            if (gameState.showResolution) {
-                const res = document.getElementById('resolution'); res.classList.remove('hidden'); const p = gameState.players[myId];
-                document.getElementById('personal-feedback').innerHTML = p.lastPoints > 0 ? '<span class="text-green-500">RICHTIG! ✅</span>' : `<span class="text-red-500">DANEBEN! ("${p.lastChoice || 'Nix'}") ❌</span>`;
-                document.getElementById('correct-text').innerHTML = (q.mode === 'GHOST') ? q.correct_answer.split('').reverse().join('') : q.correct_answer;
-                document.getElementById('sauf-text').innerText = gameState.saufText;
-                if (isHost) document.getElementById('host-next').classList.remove('hidden');
-                if (p.lastPoints === 0) document.querySelector('.active-choice')?.classList.add('animate-throw');
-            } else {
-                document.getElementById('resolution').classList.add('hidden');
-                if (q.mode === 'IMG') { document.getElementById('image-container').classList.remove('hidden'); document.getElementById('question-image').src = proxify(q.image); renderMC(q); }
-                else if (q.mode === 'GHOST') { document.getElementById('ghost-area').classList.remove('hidden'); renderGhost(q); }
-                else { renderMC(q); }
-            }
-        }
+            <main class="flex-1 flex flex-col bg-background-light dark:bg-background-dark p-8 overflow-y-auto relative">
+                <div class="flex-1 flex flex-col items-center justify-center max-w-5xl mx-auto w-full">
+                    <div id="arena-media" class="relative group hidden">
+                        <div class="p-4 bg-gradient-to-br from-gold via-[#b8860b] to-gold rounded-sm shadow-2xl">
+                            <div id="q-image-inner" class="bg-background-dark p-1 border-2 border-black/40">
+                                <div class="relative aspect-video w-[600px] lg:w-[800px] overflow-hidden cursor-crosshair" onclick="handleImageClick(event)">
+                                    <img id="q-image" class="w-full h-full object-cover" src="">
+                                    <div id="sniper-crosshair" class="hidden absolute size-8 border-2 border-primary rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                                        <h3 id="q-media-text" class="text-white text-xl font-bold">...</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        function renderMC(q) {
-            const mc = document.getElementById('mc-area'); mc.classList.remove('hidden');
-            if (mc.dataset.rd != gameState.currentIndex) {
-                mc.dataset.rd = gameState.currentIndex; mc.innerHTML = '';
-                [...(q.incorrect_answers || []), q.correct_answer].sort(() => Math.random() - 0.5).forEach(o => {
-                    const b = document.createElement('button'); b.className = "paper-note cursor-pointer";
-                    b.style.setProperty('--rotation', `${Math.random() * 6 - 3}deg`); b.innerHTML = o; b.onclick = () => submitChoice(o); mc.appendChild(b);
+                    <div class="mt-8 w-full max-w-3xl">
+                        <div class="bg-parchment dark:bg-wood-light/20 border border-primary/20 p-10 rounded-3xl shadow-2xl relative overflow-hidden backdrop-blur-sm">
+                            <div class="absolute top-0 right-0 p-4 opacity-5">
+                                <span class="material-symbols-outlined text-8xl">travel_explore</span>
+                            </div>
+                            <h2 id="q-text" class="text-3xl font-black text-slate-900 dark:text-white text-center mb-10 leading-tight">...</h2>
+                            
+                            <div id="mc-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Choices injected here -->
+                            </div>
+
+                            <div id="resolution-block" class="hidden mt-8 pt-8 border-t border-primary/10 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div id="res-feedback" class="text-4xl font-black uppercase mb-2">...</div>
+                                <div id="res-answer" class="text-xl font-bold text-slate-600 dark:text-slate-400">...</div>
+                                <button id="host-next-btn" onclick="nextRound()" class="hidden mt-6 mx-auto bg-primary hover:bg-primary/90 text-white px-10 py-4 rounded-xl font-black uppercase shadow-xl transition-all">Next Round</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reaction-bar" class="mt-auto pt-8 flex justify-center w-full">
+                    <div class="bg-wood-dark dark:bg-black/60 p-2 rounded-full border border-primary/30 flex gap-1 items-center overflow-x-auto no-scrollbar shadow-2xl">
+                        <!-- Emojis injected here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- State: RESULTS -->
+    <div id="screen-results" class="hidden flex flex-col grow bg-background-light dark:bg-background-dark overflow-y-auto">
+         <header class="flex items-center justify-between border-b border-primary/20 px-6 py-4">
+            <div class="flex items-center gap-4">
+                <div class="text-primary size-8"><span class="material-symbols-outlined text-4xl">workspace_premium</span></div>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-white italic">sQuizz</h2>
+            </div>
+            <button onclick="location.reload()" class="bg-primary/20 text-primary px-6 py-2 rounded-xl font-bold">New Table</button>
+        </header>
+
+        <main class="max-w-6xl mx-auto w-full px-4 py-8">
+            <div class="relative overflow-hidden rounded-xl mb-12 border-4 border-primary/30 shadow-2xl">
+                <div class="bg-wood-dark min-h-[250px] flex flex-col justify-center items-center text-center p-8 bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')]">
+                    <span class="text-primary font-bold tracking-[0.5em] text-sm mb-2">END OF THE ROUND</span>
+                    <h1 class="text-white text-6xl font-black italic tracking-tighter">DAS SÜNDENREGISTER</h1>
+                    <p class="text-primary/80 mt-2 font-medium">The dust has settled. Here are the scoundrels.</p>
+                </div>
+            </div>
+
+            <div id="results-podium" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Most Wanted injected here -->
+            </div>
+
+            <section class="bg-[#f4ece1] dark:bg-stone-900 shadow-2xl wanted-border rounded-sm p-8 mb-12 overflow-x-auto">
+                <h2 class="text-3xl font-black uppercase text-stone-900 dark:text-stone-100 mb-8 border-b-2 border-stone-800/10 pb-4">Tavern Ledger</h2>
+                <table class="w-full ledger-table">
+                    <thead>
+                        <tr id="ledger-head" class="text-left text-xs uppercase font-black text-stone-600 dark:text-stone-400">
+                             <th class="px-4 py-2">The Question</th>
+                             <!-- Player heads injected here -->
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-body" class="before:block before:h-4">
+                        <!-- History injected here -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Global Components -->
+    <div id="emoji-announcer" class="fixed inset-0 pointer-events-none flex flex-col items-center justify-center z-[2000] opacity-0 transition-opacity duration-300">
+        <p id="emoji-from" class="text-white font-black uppercase tracking-widest text-sm mb-2 drop-shadow-md"></p>
+        <span id="emoji-glyph" class="text-9xl drop-shadow-2xl"></span>
+    </div>
+</div>
+
+<script>
+    let peer, myId, myName = "", isHost = false, connections = [];
+    let gameState = {
+        players: {},
+        questions: [],
+        currentIndex: 0,
+        status: 'BOOTING', // BOOTING, LOBBY, ARENA, RESULTS
+        showResolution: false,
+        history: [],
+        map: 'world'
+    };
+
+    const AVATARS = [
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBR4Q1CdAorRh0hKOSLrNQOHCRaRgaT6tFKrrBR-mNwoF4A-916PPc66Yw0aMrrkD7-QuhTK25R0azUksvZn9r8FeXpdQ-PMRJenS4k-xqvt-GvFUiDXa4xSWggOSvNcE_dyCzDPotf1Kk0vNyxLKKBWwjSecAeG-7EY7gJPjWvPIGmc8nILgdYHFJkODzWpKNrtqEglSSN2XRDxy82AXN2X7GIXnbfiJa5yM0ROvY9JP_S8zh6Agg_m-Um-aAR26S4hDzB9aRKVBoq',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuD1QZTXuu4zBTVLpI8i8esr4OYjnmHTMtez5SipxhXMJgMj6ghnuy-Mf8XJrptfPloju8VpeylEcEAyQfc7U9a5DnrCJWZkFQQKxvYfePt6WVaw7v_Ms-o-GJZUFYA9Z2A-7ihv7-A2cdGOnMks7cqWvgM22gm2ukM2wU0I7zVUWVlbhiqfUW7trl5P75pjWt6UBZqm_mEZ2ZZ8F8MYI-ryj0Xre53WHmZECfY4bfPvYBrXcpSr9_gCO8my7oJjC1mPmaffSEbPUEH4',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCfZRnkp-87WHfkIPjK8E_L47uVf5roXG5VMd2NUlWWgLvHBwtSqx5uawToUj805BVAdHsF1F3Qz1IODt7niQ6J1HNg9iXnoj3wPsmsVk7-7MJSfYNVftnHV--MukwAQJMRqlK-QOBr5L_96cegGv9BgcApSOTQW3DClEQNK75wYXrkPIEdKIIWMTeYbUTybO4obpmAGLbD8Cu2EWsr74Pm9riRrrN7yR-agLb3i2zuqSd2nwDsbCKcTSY-cp5BaeYHFT6rXvvHXbqK',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBMtLXkqP60-ReAUB4A5VvSwzyprIeTPLsrXkrSrNd-78XfbzwXbZX90xio9RMzvq5GDsRxpkwdq4nsx7OMkh7fTPfHxRpTxLQmHBJcaK95wKp8toUj6kxUQPfy7AtfMUPxpsdx6gdXrTVrSJciaUH8pWme5bLfIJyFreTk3LJiv9Mh80YXWcX89m-yrzY37xuwWl8JKUgGKDJ0DodnHawufVjZQXsy8X-k_zgLkUgKpUIZVginm-1VYiIFSVL9JMcp6-TzbXDE-Pf-',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuC5KVh0b3DKMwQfo6968oiKwFi2WHFJFC3rVGlJ-okNGvQahbi7PV5jHdKc00xoutUv3Kohz2H0rPT60xKPgCmhka6_mfmZ1q7WIlWlSlza3t_vsg0Ntu7UqMdezqt0x5avpAlYf145r4TFmoF-JonCMpNxah29CvVnzEXPCPL-Pat5YxJ3JDEoUiq4UWvSgs5C27FGvIfz3Q7sW3iBQWaKipr4mUTRlOAgv0mXNAlIsFLe867VKEsMDlfjJCQtJyLO7RU6KhsDFzTq',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCJ_x-wiRQDJa2EvzVdIxhtor80Rbey76Dw7Us3nE-_Fly8lZKeejW86fOnsopXDcBUbUmdJSPHw6RkuIEy9RA8qv6_B2tIsOpEkLcS9-Os3wgZSq2fivvXdX6VPaEt78rFtvc9anUYQcRceCUIXXQflwkGTsder0mOeTW_VUniS0lRP_inyk_T1DYWl7nWZI8EmZd7-qKeTIAV9wgtomShlFOC2X3ERrIfR_zjNbiOkJmokNk9ubi__vX2Zu2QzPUMR5gy3IOI2nIe',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCadDJHgerXqQQxIwqQTZkvM0GC6nAmYVmegV128x9FOTF1yQLK3qCVIqZdBxDH2lqzFTswKx1GgTy3emX6rCZsenjfouFPmQZT-1ALM2iUa5CYVJnwCzQPZiY9Tw6RsXlhuJJ0zavuNcsvbOZ_Nm8vBG4AHk-VXPXyAvJa2nXd7JfZsttZl7F6OepuyG9oZakd5b8CEQfpMfsQDaaYd8wtLT-QxFUTmzGrhryxD13J2c0j-jU-sOPJNS6pO7Hy6zKpC77vYp0DOTh2',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuDz2LglcFfSmMut3w6HfAOc7TbM60GMQFK2bfzvGStcQUbQGruLx_8RM3Q9ETlLvrMzEjSSj9c3fDYgsDJjjvzhfyCSBigM2bNOqvi6SLMBOQD8Jz_2KQebkplMawGIkZK84llw27tT2hYGHRcEzFzWGgBf7dbGzGkqcZdztSTmrXWSROJLRbK0M_UWtW5w2v0R9Z9oa2cYidsuoihYtxmFW6GsOsuV2NyWO882AhyKChu5OLWeCi6Dl0PkndfvFb7jEoT-2DGLHH-a',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuAlMdqR-g33rAXDeBldfREZMYW2utvM4T6TQ4AntfUB6xERmrQ_1S9C2NU_E0Vd9L-E0tl8vv_QAx0NTvAQpk_M26WmsXs6sglblmDE6BXCpgrASKekCh7aI6K4monSjhJv5L2mCZHKl-bZ-MkxkrCVc2pmvQDuYEeKUB22om9W4LgXNjmE2RADehTHvxQ5_O1dhQ-qi4vGNpE2LnwgGOlDl2eZqffQbLhnZk3E0VVtwm5atuSw6-9SV_7lzFRoj4dxhpCnZpDN4pgZ',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuAZNmrvFVE2D-1ICAV6FoPrUadYJ27E4K3PNOp4jVE-VBnTpigrgPbml6_kRAg5Ozgi0Md5IkhKD-RiP9Rj2DH1iJMmUY_7kon0WYyBsKcRvd3ARgErvAIt7I4_3d7IPvm6jDHADYLblmTqdxuEbXgUsDZ5cbKjsMxvnhhBhjeGia3yKnQFHXocEiRyybs4CwRuMDvBjP7FLuxqWs6J0ieVk8QHgb6znx3kR6oSeGmWT6FrAjHBb5_NqFsJN15_--BHG4g5TXGiQDRq',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBJDFHwHP7YWndgxSGuswUEEuJnt7DvbaEX2xdEMAyG2qEwoqggPQL7vZ0K8_UAklD1tah6OiyKqGu1CWDcQcmSAMu4rH0WQnPHez6sB4A0FYeRkm9f675VdPyY7iJLolYk-H3Tr6S3YQcTiNqjuGx67opc2vbclZuUE2aDDNANamspl5H3ioMzK2HoexDKOfjYa9rOfFtZcMzlze831R64-Nzx_nX8Payk0eKSSD70glfoFw-2I0rS8WY9Jpu7YdjLYZaZ0Ah--Gy3',
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBOe7H4A1pwuq55m4vCZmSRGC8eAUye9NDqnlUAXz01xaxeo0kiQFykJEBJxPULJnhm69CrUaF07IFhhwZFt03d5pZ379bo8U9TVgtM5TJ3bUOylUORNdsqapExLIeorQyFlelEBG4jDVY1V3BE9s5lLvrxLH9zvE-PmgqZKBHigz77kyqBWu9-sXa7bWi2tgew-nRIwhQsQkDDzQwQxYxITzQAhatSyIkETF2hctVqdTTw3A9ai-SXIzHkHx-9eQp5lCtYs-0_xRe9'
+    ];
+    let myAvatar = AVATARS[0];
+
+    const EMOJIS = ["🔥", "🌍", "🎯", "🤔", "🚀", "👏", "🤯", "🎉", "💯", "🤩", "💡", "💎", "🍕", "🍺", "🥳", "👀", "💀", "😭", "🤣", "👑", "✨", "🗺️", "🧭", "📍", "🛰️", "⛰️", "⚡", "🆒", "🏆", "🖖"];
+
+    // --- Core Funcs ---
+    function toggleTheme() { 
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('squizz_theme', isDark ? 'dark' : 'light');
+    }
+    // Load preference
+    if (localStorage.getItem('squizz_theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+    
+    async function translateText(text) {
+        if (!text) return "";
+        try {
+            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=de&dt=t&q=${encodeURIComponent(text)}`);
+            const data = await res.json(); 
+            return data[0].map(x => x[0]).join('') || text;
+        } catch (e) { return text; }
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    }
+    async function isImageValid(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+            // Timeout after 3 seconds
+            setTimeout(() => resolve(false), 3000);
+        });
+    }
+
+    // --- PeerJS Logic ---
+    function init() {
+        peer = new Peer();
+        peer.on('open', id => { 
+            myId = id; 
+            document.getElementById('room-id-text').innerText = id;
+            document.getElementById('p2p-status-text').innerText = "Table Ready";
+            setTimeout(() => setState('LOBBY'), 1500);
+        });
+        peer.on('connection', conn => {
+            conn.on('open', () => {
+                connections.push(conn);
+                conn.on('data', d => handleData(d, conn));
+                conn.on('close', () => {
+                    connections = connections.filter(c => c.peer !== conn.peer);
+                    delete gameState.players[conn.peer];
+                    sync();
                 });
+            });
+        });
+        peer.on('error', err => {
+            console.error(err);
+            document.getElementById('p2p-status-text').innerText = "Conn. Error";
+        });
+    }
+
+    function handleData(data, conn) {
+        if (data.type === 'JOIN') {
+            gameState.players[conn.peer] = { id: conn.peer, name: data.name, avatar: data.avatar, score: 0, ready: false, tally: [], lastChoice: null };
+            sync();
+        }
+        if (data.type === 'SYNC') {
+            gameState = data.state;
+            updateUI();
+        }
+        if (data.type === 'SUBMIT') {
+            const p = gameState.players[conn.peer];
+            if (p) {
+                p.ready = true;
+                p.lastChoice = data.choice;
+                checkAllReady();
             }
         }
+        if (data.type === 'REACTION') showEmoji(data.from, data.emoji);
+    }
 
-        function renderGhost(q) {
-            const gs = document.getElementById('ghost-sequence');
-            gs.innerHTML = q.correct_answer.split('').map(n => `<div class="p-4 border-2 border-orange-700 text-4xl font-bold">${n}</div>`).join('');
-            setTimeout(() => { gs.innerHTML = q.correct_answer.split('').map(() => `<div class="p-4 border-2 border-orange-700 text-4xl font-bold">?</div>`).join(''); }, 2000);
-            document.getElementById('ghost-input').value = '';
+    function sync() {
+        if (!isHost) return;
+        updateUI();
+        connections.forEach(c => c.send({ type: 'SYNC', state: gameState }));
+    }
+
+    function startHost() {
+        isHost = true;
+        myName = document.getElementById('input-nickname').value || "Captain_Quiz";
+        gameState.players[myId] = { id: myId, name: myName, avatar: myAvatar, score: 0, ready: false, tally: [], lastChoice: null };
+        document.getElementById('host-only-settings').classList.remove('hidden');
+        document.getElementById('host-actions').classList.remove('hidden');
+        document.getElementById('join-actions').classList.add('hidden');
+        document.getElementById('lobby-id-display').classList.remove('hidden');
+        document.getElementById('room-status-text').innerText = "Hosting Table";
+        sync();
+    }
+
+    function joinGame() {
+        const roomId = document.getElementById('input-room-id').value.trim();
+        if(!roomId) return alert("Code missing!");
+        myName = document.getElementById('input-nickname').value || "Guest_" + Math.floor(Math.random()*1000);
+        const conn = peer.connect(roomId);
+        conn.on('open', () => {
+            connections.push(conn);
+            conn.send({ type: 'JOIN', name: myName, avatar: myAvatar });
+            document.getElementById('room-status-text').innerText = "Joined Table";
+            document.getElementById('join-actions').innerHTML = `<p class="text-primary font-black animate-pulse">Waiting for Host to start...</p>`;
+        });
+        conn.on('data', d => handleData(d, conn));
+    }
+
+    // --- Game Logic ---
+    async function generateCustomQuestions(count) {
+        const custom = [];
+        const categories = ['distance', 'outline', 'brand', 'art', 'landmark', 'emoji', 'color', 'sniper'];
+        
+        for (let i = 0; i < count; i++) {
+            const cat = categories[Math.floor(Math.random() * categories.length)];
+            try {
+                let qData = null;
+                if (cat === 'distance') {
+                    const res = await fetch("https://restcountries.com/v3.1/all?fields=name,capitalInfo,latlng");
+                    const data = await res.json();
+                    const available = data.filter(c => c.capitalInfo?.latlng && c.name?.common);
+                    const d1 = available[Math.floor(Math.random()*available.length)];
+                    const d2 = available[Math.floor(Math.random()*available.length)];
+                    const dist = calculateDistance(d1.latlng[0], d1.latlng[1], d2.latlng[0], d2.latlng[1]);
+                    qData = { mode: 'MC', question: `Distance: How many km between <span class="text-primary">${d1.name.common}</span> and <span class="text-primary">${d2.name.common}</span>?`, correct_answer: `${dist} km`, incorrect_answers: [`${Math.round(dist * 0.7)} km`, `${Math.round(dist * 1.3)} km`, `${Math.round(dist + 800)} km`] };
+                } else if (cat === 'outline') {
+                    const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
+                    const data = await res.json();
+                    const target = data[Math.floor(Math.random()*data.length)];
+                    const imgUrl = `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${target.cca2.toLowerCase()}/vector.svg`;
+                    if (await isImageValid(imgUrl)) {
+                        qData = { mode: 'IMG', image: imgUrl, question: "Outline Oracle: Which country is this?", correct_answer: target.name.common, incorrect_answers: ["France", "Brazil", "Japan", "Kenya"].filter(n => n !== target.name.common).slice(0,3) };
+                    }
+                } else if (cat === 'brand') {
+                    const brands = [
+                        { name: "Tesla", domain: "tesla.com" }, { name: "Ferrari", domain: "ferrari.com" }, 
+                        { name: "BMW", domain: "bmw.com" }, { name: "Porsche", domain: "porsche.com" },
+                        { name: "Toyota", domain: "toyota.com" }, { name: "Audi", domain: "audi.com" }
+                    ];
+                    const b = brands[Math.floor(Math.random() * brands.length)];
+                    const imgUrl = `https://logo.clearbit.com/${b.domain}?size=500`;
+                    if (await isImageValid(imgUrl)) {
+                        qData = { mode: 'IMG', image: imgUrl, question: "Brand Master: Which automotive legend is this?", correct_answer: b.name, incorrect_answers: brands.filter(x => x.name !== b.name).map(x => x.name).slice(0,3) };
+                    }
+                } else if (cat === 'emoji') {
+                    const emojis = [
+                        { q: "🚢 🧊 🎻", a: "Titanic" }, { q: "🧙 ⚡ 🦉", a: "Harry Potter" },
+                        { q: "🕷️ 🕸️ 🏙️", a: "Spider-Man" }, { q: "🦁 👑 🌅", a: "The Lion King" }
+                    ];
+                    const e = emojis[Math.floor(Math.random() * emojis.length)];
+                    qData = { mode: 'MC', question: `Emoji Cryptogram: Which movie is this? <div class="text-4xl my-4">${e.q}</div>`, correct_answer: e.a, incorrect_answers: ["Avatar", "Inception", "The Matrix"].filter(x => x !== e.a).slice(0,3) };
+                } else if (cat === 'color') {
+                    const brands = [
+                        { name: "McDonalds", colors: ["#FFC72C", "#DA291C"] },
+                        { name: "Facebook", colors: ["#1877F2", "#FFFFFF"] },
+                        { name: "Starbucks", colors: ["#007042", "#FFFFFF"] },
+                        { name: "IKEA", colors: ["#0051BA", "#FFDA1A"] }
+                    ];
+                    const b = brands[Math.floor(Math.random() * brands.length)];
+                    const colorHtml = b.colors.map(c => `<div class="h-16 w-full" style="background-color: ${c}"></div>`).join('');
+                    qData = { mode: 'MC', question: `Color Palette: Which brand's DNA is this?<div class="flex gap-2 my-4 border-4 border-white/20 rounded-xl overflow-hidden">${colorHtml}</div>`, correct_answer: b.name, incorrect_answers: brands.filter(x => x.name !== b.name).map(x => x.name).slice(0,3) };
+                } else if (cat === 'art') {
+                    const arts = [
+                        { name: "Mona Lisa", artist: "Leonardo da Vinci", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/687px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg" },
+                        { name: "Starry Night", artist: "Vincent van Gogh", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/757px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg" },
+                        { name: "The Scream", artist: "Edvard Munch", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/800px-The_Scream.jpg" },
+                        { name: "Girl with a Pearl Earring", artist: "Johannes Vermeer", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Johannes_Vermeer_%28en%29_Girl_with_a_Pearl_Earring_%28de%29_Das_M%C3%A4dchen_mit_dem_Perlenohrring_%28it%29_Ragazza_col_turbante_%28nl%29_Meisje_met_de_parel.jpg/800px-thumbnail.jpg" }
+                    ];
+                    const a = arts[Math.floor(Math.random() * arts.length)];
+                    if (await isImageValid(a.img)) {
+                        qData = { mode: 'IMG', image: a.img, question: `Art Master: Who painted this masterpiece?`, correct_answer: a.artist, incorrect_answers: ["Picasso", "Monet", "Dalí", "Rembrandt"].filter(a_name => a_name !== a.artist).slice(0,3) };
+                    }
+                } else if (cat === 'sniper') {
+                    const spots = [
+                        { name: "Eiffel Tower", lat: 2.2945, lon: 48.8584, x: 0.5, y: 0.5 },
+                        { name: "Statue of Liberty", lat: -74.0445, lon: 40.6892, x: 0.5, y: 0.5 }
+                    ];
+                    const s = spots[Math.floor(Math.random() * spots.length)];
+                    const imgUrl = `https://static-maps.yandex.ru/1.x/?ll=${s.lat},${s.lon}&z=17&l=sat`;
+                    if (await isImageValid(imgUrl)) {
+                        qData = { mode: 'SNIPER', image: imgUrl, question: `Sniper Mode: Click on the <b>${s.name}</b>!`, targetX: s.x, targetY: s.y, correct_answer: s.name, incorrect_answers: [] };
+                    }
+                } else {
+                    const a = Math.floor(Math.random() * 15) + 2;
+                    const b = Math.floor(Math.random() * 10) + 2;
+                    const c = Math.floor(Math.random() * 20) + 2;
+                    const ans = a * (b * c);
+                    qData = { mode: 'MC', question: `Quick Math: What is <span class="text-primary">${a} * (${b} * ${c})</span>?`, correct_answer: ans.toString(), incorrect_answers: [(ans + 10).toString(), (ans - 5).toString(), (ans * 1.1).toFixed(0)] };
+                }
+                
+                if (qData) {
+                    custom.push(qData);
+                } else {
+                    i--; 
+                }
+            } catch (e) { 
+                console.error("Gen failed", e);
+                i--;
+            }
+        }
+        
+        custom.forEach(q => {
+            const fallbacks = ["Berlin", "London", "Paris", "New York", "Tokyo", "Rome", "Madrid"];
+            while (q.incorrect_answers.length < 3 && q.mode !== 'SNIPER') {
+                const f = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+                if (!q.incorrect_answers.includes(f) && f !== q.correct_answer) q.incorrect_answers.push(f);
+            }
+        });
+        
+        return custom;
+    }
+
+    async function initiateQuiz() {
+        if(!isHost) return;
+        const count = 10;
+        gameState.status = 'BOOTING';
+        gameState.currentIndex = 0;
+        gameState.questions = [];
+        sync();
+        
+        // Artificial delay for "Booting" effect and loading buffer
+        await new Promise(r => setTimeout(r, 2500));
+        
+        const custom = await generateCustomQuestions(count);
+        gameState.questions = custom;
+        gameState.questions.sort(() => Math.random() - 0.5);
+
+        gameState.status = 'ARENA';
+        resetReadiness();
+        sync();
+    }
+
+    function resetReadiness() {
+        gameState.showResolution = false;
+        Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; });
+    }
+
+    function submitChoice(choice) {
+        if(gameState.players[myId].ready) return;
+        if(isHost) {
+            gameState.players[myId].ready = true;
+            gameState.players[myId].lastChoice = choice;
+            checkAllReady();
+        } else {
+            connections[0].send({ type: 'SUBMIT', choice: choice });
+            gameState.players[myId].ready = true;
+            updateUI();
+        }
+    }
+
+    function checkAllReady() {
+        if(!isHost) return;
+        const all = Object.values(gameState.players);
+        if(all.every(p => p.ready)) {
+            const q = gameState.questions[gameState.currentIndex];
+            all.forEach(p => {
+                let correct = false;
+                if (q.mode === 'SNIPER') {
+                    const dx = p.lastChoice.x - q.targetX;
+                    const dy = p.lastChoice.y - q.targetY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    correct = dist < 0.1; // 10% tolerance
+                    if(correct) p.score += Math.round(100 * (1 - dist*5)); 
+                } else {
+                    correct = p.lastChoice === q.correct_answer;
+                    if(correct) p.score += 100;
+                }
+                p.tally.push(correct ? 'green' : 'red');
+            });
+            gameState.history.push({ q: q.question, ans: q.correct_answer || "Sniper Target", players: JSON.parse(JSON.stringify(gameState.players)) });
+            gameState.showResolution = true;
+        }
+        sync();
+    }
+
+    function nextRound() {
+        gameState.currentIndex++;
+        if(gameState.currentIndex >= gameState.questions.length) {
+            gameState.status = 'RESULTS';
+        } else {
+            resetReadiness();
+        }
+        sync();
+    }
+
+    // --- UI Logic ---
+    function handleImageClick(e) {
+        const q = gameState.questions[gameState.currentIndex];
+        if (q.mode !== 'SNIPER' || gameState.players[myId].ready) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        
+        const cross = document.getElementById('sniper-crosshair');
+        cross.style.left = (x * 100) + '%';
+        cross.style.top = (y * 100) + '%';
+        cross.classList.remove('hidden');
+        
+        submitChoice({ x, y });
+    }
+
+    function setState(state) {
+        document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
+        document.getElementById('screen-' + state.toLowerCase()).classList.remove('hidden');
+        gameState.status = state;
+    }
+
+    function updateUI() {
+        if(gameState.status !== document.querySelector('[id^="screen-"]:not(.hidden)').id.replace('screen-','').toUpperCase()) {
+            setState(gameState.status);
         }
 
-        function triggerEmoji(from, emoji) {
-            const ov = document.getElementById('emoji-display'); document.getElementById('emoji-sender').innerText = "FROM: " + from; document.getElementById('emoji-icon').innerText = emoji;
-            ov.classList.add('opacity-100'); setTimeout(() => ov.classList.remove('opacity-100'), 1500);
+        // 1. Player Lists
+        const pArray = Object.values(gameState.players).sort((a,b) => b.score - a.score);
+        
+        if (gameState.status === 'LOBBY') {
+            document.getElementById('player-grid').innerHTML = pArray.map(p => `
+                <div class="flex flex-col items-center p-6 rounded-2xl bg-wood-dark border-2 ${p.id === Object.keys(gameState.players)[0] ? 'border-primary' : 'border-white/10'} shadow-2xl relative">
+                    ${p.id === Object.keys(gameState.players)[0] ? '<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full">HOST</div>' : ''}
+                    <div class="w-32 h-32 mb-4 bg-parchment rounded-full overflow-hidden border-4 border-primary/30">
+                        <img class="w-full h-full object-cover" src="${p.avatar}">
+                    </div>
+                    <h4 class="text-white font-bold text-lg">${p.name}</h4>
+                    <span class="text-emerald-500 text-xs font-bold flex items-center gap-1">Connected</span>
+                </div>
+            `).join('') + `
+                <div class="flex flex-col items-center p-6 rounded-2xl bg-wood-dark/40 border-2 border-dashed border-primary/20 animate-pulse">
+                    <div class="w-32 h-32 mb-4 bg-white/5 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-primary/40">person_add</span>
+                    </div>
+                </div>
+            `;
         }
 
-        function sendEmoji(e) { if (isHost) handleData({ type: 'REACTION', from: myName, emoji: e }, { peer: myId }); connections.forEach(c => c.send({ type: 'REACTION', from: myName, emoji: e })); if (!isHost) triggerEmoji(myName, e); }
-        function nextRound() { gameState.currentIndex++; if (gameState.currentIndex >= gameState.questions.length) gameState.status = 'RESULTS'; else resetReadiness(); sync(); }
-        function resetReadiness() { gameState.showResolution = false; Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); }
+        if (gameState.status === 'ARENA') {
+            const q = gameState.questions[gameState.currentIndex];
+            document.getElementById('round-indicator').innerText = `${gameState.currentIndex + 1}/${gameState.questions.length}`;
+            document.getElementById('q-text').innerHTML = q.question;
+            
+            if(q.mode === 'IMG' || q.mode === 'SNIPER') {
+                const inner = document.getElementById('q-image-inner');
+                if (q.question.includes("Outline Oracle")) {
+                    inner.classList.remove('bg-background-dark');
+                } else {
+                    inner.classList.add('bg-background-dark');
+                }
+                document.getElementById('arena-media').classList.remove('hidden');
+                document.getElementById('q-image').src = q.image;
+                
+                // Hide crosshair for non-sniper or start of new round
+                if (q.mode !== 'SNIPER' || !gameState.players[myId].lastChoice) {
+                    document.getElementById('sniper-crosshair').classList.add('hidden');
+                }
+            } else {
+                document.getElementById('arena-media').classList.add('hidden');
+            }
 
-        function renderFinal() {
-            document.getElementById('screen-quiz').classList.add('hidden'); document.getElementById('screen-results').classList.remove('hidden');
-            document.getElementById('podium').innerHTML = Object.values(gameState.players).sort((a, b) => b.score - a.score).map((p, i) => `
-            <div class="flex justify-between chalk-card p-4 rounded-xl mb-2"><span class="text-xl">#${i + 1} ${p.name}</span><span class="text-xl text-yellow-500">${p.score}</span></div>`).join('');
-            document.getElementById('summary-table').innerHTML = gameState.history.map((h, i) => `
-            <div class="border-b border-gray-300 pb-2 mb-2 text-left"><p class="font-bold text-[9px] uppercase">Q${i + 1}: ${h.q}</p><div class="flex flex-wrap gap-2 mt-1">
-                ${Object.values(h.players).map(p => { const isCorrect = p.lastPoints > 0; return `<span class="text-[8px] px-1 rounded border ${isCorrect ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'}">${p.name}: ${p.lastChoice || '-'}</span>`; }).join('')}
-            </div></div>`).join('');
-            confetti({ particleCount: 1000, spread: 120, origin: { y: 0.6 } });
+            // Options / Sniper UI
+            if(!gameState.showResolution) {
+                document.getElementById('resolution-block').classList.add('hidden');
+                
+                if (q.mode === 'SNIPER') {
+                    document.getElementById('mc-grid').innerHTML = `
+                        <div class="col-span-full bg-primary/10 p-8 rounded-2xl border-2 border-primary/20 text-center animate-pulse">
+                            <p class="text-primary font-black text-2xl uppercase italic tracking-widest">Sniper Mode Active</p>
+                            <p class="text-white/60 text-sm mt-2">Click directly on the target in the image above!</p>
+                        </div>
+                    `;
+                } else {
+                    const choices = [...q.incorrect_answers, q.correct_answer].sort((a,b) => a.localeCompare(b));
+                    document.getElementById('mc-grid').innerHTML = choices.map(c => `
+                        <button onclick="submitChoice('${c}')" class="flex items-center justify-between p-6 bg-white/5 border-2 ${gameState.players[myId].lastChoice === c ? 'border-primary bg-primary/10' : 'border-primary/20'} hover:border-primary rounded-2xl transition-all group">
+                            <span class="flex-1 text-left font-bold text-lg">${c}</span>
+                            ${gameState.players[myId].lastChoice === c ? '<span class="material-symbols-outlined text-primary">check_circle</span>' : ''}
+                        </button>
+                    `).join('');
+                }
+            } else {
+                document.getElementById('mc-grid').innerHTML = "";
+                document.getElementById('resolution-block').classList.remove('hidden');
+                
+                let isCorrect = false;
+                if (q.mode === 'SNIPER') {
+                    const dx = gameState.players[myId].lastChoice?.x - q.targetX;
+                    const dy = gameState.players[myId].lastChoice?.y - q.targetY;
+                    isCorrect = Math.sqrt(dx*dx + dy*dy) < 0.1;
+                } else {
+                    isCorrect = gameState.players[myId].lastChoice === q.correct_answer;
+                }
+
+                document.getElementById('res-feedback').innerText = isCorrect ? "RICHTIG! ✅" : "DANEBEN! ❌";
+                document.getElementById('res-feedback').className = `text-4xl font-black uppercase mb-2 ${isCorrect ? 'text-sage-green' : 'text-brick-red'}`;
+                document.getElementById('res-answer').innerText = q.mode === 'SNIPER' ? "The target was acquired!" : "The answer was: " + q.correct_answer;
+                if(isHost) document.getElementById('host-next-btn').classList.remove('hidden');
+            }
+
+            // Player Cards
+            document.getElementById('arena-player-list').innerHTML = pArray.map((p, i) => `
+                <div class="relative bg-wood-dark/60 rounded-xl border-l-[6px] ${p.ready ? 'border-primary shadow-lg shadow-primary/20' : 'border-slate-500/30'} p-4 transition-all overflow-hidden group">
+                    <div class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')]"></div>
+                    <div class="flex items-center gap-4 relative z-10">
+                        <div class="relative">
+                            <img class="size-14 rounded-full border-2 ${p.ready ? 'border-primary' : 'border-white/20'} bg-parchment shadow-md" src="${p.avatar}">
+                            ${p.ready ? '<div class="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-black p-1 rounded-full animate-bounce">READY</div>' : ''}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-end mb-1">
+                                <span class="text-white font-black text-sm uppercase tracking-tight truncate w-32">${p.name}</span>
+                                <span class="text-[10px] font-black text-primary/80">#${i + 1}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary font-mono font-black text-lg">${p.score}</span>
+                                <div class="flex gap-0.5">
+                                    ${(p.tally || []).slice(-5).map(t => `<div class="w-1.5 h-4 rounded-full ${t === 'green' ? 'bg-sage-green' : 'bg-brick-red'}"></div>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Race Track
+            const max = Math.max(...pArray.map(p => p.score), 100);
+            document.getElementById('race-lane').innerHTML = pArray.map(p => {
+                const offset = (p.score / (max + 200)) * 90;
+                return `<img class="race-horse absolute size-10 rounded-full border-2 border-primary bg-white shadow-lg transform -translate-x-1/2" src="${p.avatar}" style="left: ${offset}%;">`;
+            }).join('');
         }
 
-        init();
-    </script>
+        if(gameState.status === 'RESULTS') {
+            document.getElementById('results-podium').innerHTML = pArray.slice(0,3).map((p,i) => `
+                <div class="flex flex-col bg-[#f4ece1] p-6 wanted-border rounded-sm shadow-2xl ${i===0 ? 'scale-105 ring-4 ring-primary' : ''}">
+                    <img class="grayscale contrast-125 mb-4 aspect-square object-cover border-2 border-stone-800" src="${p.avatar}">
+                    <div class="text-stone-900 text-center">
+                        <p class="text-xs uppercase font-bold text-stone-600">REWARD: $${(3-i)*2500}</p>
+                        <h3 class="text-2xl font-black uppercase my-1">${p.name}</h3>
+                        <div class="h-px bg-stone-800 w-full mb-2"></div>
+                        <p class="text-lg font-black italic">${i===0 ? 'THE CHAMPION' : (i+1)+'. Place'}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('ledger-head').innerHTML = `<th class="px-4 py-2">The Question</th>` + pArray.map(p => `<th class="px-4 py-2 text-center">${p.name.split(' ')[0]}</th>`).join('');
+            document.getElementById('ledger-body').innerHTML = gameState.history.map((h, i) => `
+                <tr class="group">
+                    <td class="ledger-cell font-bold text-stone-800 dark:text-stone-200 border-l-4 border-stone-400 bg-stone-100/40 dark:bg-stone-800/40 rounded-l-lg">
+                        <span class="block text-[10px] text-stone-500 uppercase tracking-tighter">Round ${i+1}</span>
+                        <div class="mb-1">${h.q}</div>
+                        <div class="text-xs text-sage-green font-black">Correct: ${h.ans}</div>
+                    </td>
+                    ${pArray.map(p => {
+                        const correct = h.players[p.id].lastChoice === h.ans;
+                        return `<td class="ledger-cell text-center ${correct ? 'correct-answer' : 'incorrect-answer'}">
+                            <div class="font-bold">${h.players[p.id].lastChoice || "N/A"}</div>
+                            <div class="text-[10px] uppercase opacity-60">${correct ? 'Right' : 'Wrong'}</div>
+                        </td>`;
+                    }).join('')}
+                </tr>
+            `).join('');
+            confetti({ particleCount: 500, spread: 100, origin: { y: 0.6 } });
+        }
+    }
+
+    function showEmoji(from, glyph) {
+        const el = document.getElementById('emoji-announcer');
+        document.getElementById('emoji-from').innerText = from;
+        document.getElementById('emoji-glyph').innerText = glyph;
+        el.style.opacity = "1";
+        setTimeout(() => el.style.opacity = "0", 2000);
+    }
+
+    function sendEmoji(e) {
+        if(isHost) showEmoji(myName, e);
+        connections.forEach(c => c.send({ type: 'REACTION', from: myName, emoji: e }));
+    }
+
+    // Init Emojis
+    document.querySelector('#reaction-bar div').innerHTML = EMOJIS.map(e => `
+        <button onclick="sendEmoji('${e}')" class="size-10 flex items-center justify-center hover:bg-primary/20 rounded-full transition-transform hover:scale-125">${e}</button>
+    `).join('');
+
+    
+
+    // Init Avatars
+    const avatarGrid = document.getElementById('avatar-grid');
+    AVATARS.forEach((src, idx) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = `avatar-option ${idx === 0 ? 'selected' : ''}`;
+        img.onclick = () => {
+            document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+            img.classList.add('selected');
+            myAvatar = src;
+        };
+        avatarGrid.appendChild(img);
+    });
+
+    init();
+</script>
 </body>
-
 </html>
