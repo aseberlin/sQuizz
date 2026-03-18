@@ -1,748 +1,383 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JizzQuiz Multiverse - Stable Edition</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>sChartS | The King of Charts</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Core Dependencies (UMD for maximum stability) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Arvo:wght@400;700&family=VT323&family=Outfit:wght@300;400;700;900&display=swap"
-        rel="stylesheet">
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mirage: '#131722', grid: '#1f222d',
+                        tv: { blue: '#2962FF', p1: '#2E5BFF', p2: '#FF9500', border: '#2a2e39', text: '#d1d4dc', muted: '#787b86', gold: '#FFD700', up: '#26a69a', down: '#ef5350' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['Roboto Mono', 'monospace'] }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        :root {
-            --pub-wood: #1a0f08;
-            --pub-accent: #b45309;
-            --pub-paper: #fdf6e3;
-        }
-
-        /* --- THEMES --- */
-        body.theme-normal {
-            background-color: var(--pub-wood);
-            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
-            color: #d1d5db;
-            font-family: 'Arvo', serif;
-        }
-
-        .theme-normal .chalk-card {
-            background: #1e293b;
-            border: 4px solid #334155;
-            background-image: url('https://www.transparenttextures.com/patterns/black-linen.png');
-            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5);
-        }
-
-        .theme-normal .paper-note {
-            background: #fffef0;
-            color: #1a1a1a;
-            border: 1px solid #d1d5db;
-            clip-path: polygon(1% 2%, 99% 1%, 97% 98%, 2% 96%);
-            transform: rotate(var(--rotation));
-        }
-
-        .theme-normal .paper-note.active-choice {
-            background: #ffec99 !important;
-            border: 3px solid #b45309 !important;
-            transform: scale(1.1) rotate(0deg) !important;
-            z-index: 50;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        }
-
-        body.theme-c64 {
-            background-color: #0000aa;
-            color: #ffffff;
-            font-family: 'VT323', monospace;
-            text-transform: uppercase;
-        }
-
-        .theme-c64 .chalk-card {
-            background: #5555ff;
-            border: 10px double #ffffff;
-            box-shadow: 15px 15px 0px #000;
-        }
-
-        .theme-c64 .paper-note {
-            background: #0000aa;
-            color: #fff;
-            border: 4px solid #fff;
-            transform: none !important;
-            box-shadow: 8px 8px 0px #000;
-            clip-path: none;
-            font-size: 1.5rem;
-        }
-
-        .theme-c64 .paper-note.active-choice {
-            background: #ffffff !important;
-            color: #0000aa !important;
-            border: 6px solid #000 !important;
-            transform: scale(1.1) !important;
-        }
-
-        .theme-c64 .turf-track {
-            background: #00aa00;
-            border: 4px solid #fff;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 48px, #ffffff 50px);
-        }
-
-        body.theme-lsd {
-            background: #000;
-            animation: lsd-pulse 5s infinite linear;
-            font-family: 'Permanent Marker', cursive;
-        }
-
-        @keyframes lsd-pulse {
-            0% {
-                background: #f0f;
-                filter: hue-rotate(0deg);
-            }
-
-            50% {
-                background: #0ff;
-                filter: hue-rotate(180deg);
-            }
-
-            100% {
-                background: #f0f;
-                filter: hue-rotate(360deg);
-            }
-        }
-
-        .theme-lsd .paper-note {
-            background: rgba(0, 0, 0, 0.8);
-            color: #0f0;
-            border: 5px solid #f0f;
-            animation: glow-lsd 1s infinite alternate;
-            transform: skew(-5deg) !important;
-        }
-
-        .theme-lsd .paper-note.active-choice {
-            background: #fff !important;
-            color: #000 !important;
-            box-shadow: 0 0 100px #fff !important;
-            transform: scale(1.2) rotate(0deg) !important;
-        }
-
-        body.theme-urban {
-            background-color: #1a1a1a;
-            background-image:
-                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-            color: #e2e8f0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .theme-urban .chalk-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
-            border-radius: 0;
-        }
-
-        .theme-urban .paper-note {
-            background: #262626;
-            color: #00f2ff;
-            border: 1px solid #00f2ff;
-            clip-path: none;
-            transform: none !important;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.3s;
-        }
-
-        .theme-urban .paper-note.active-choice {
-            background: #00f2ff !important;
-            color: #000 !important;
-            box-shadow: 0 0 30px #00f2ff !important;
-            transform: scale(1.05) !important;
-        }
-
-        .theme-urban h1 {
-            color: #fefe00;
-            font-family: 'Inter', sans-serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -0.05em;
-        }
-
-        .theme-urban .turf-track {
-            background: #111;
-            border: 2px solid #333;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 49px, #444 50px);
-        }
-
-        body.theme-solaris {
-            background-color: #050505;
-            background-image:
-                radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050505 100%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
-            color: #f1f5f9;
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .theme-solaris .chalk-card {
-            background: rgba(15, 10, 25, 0.4);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
-            border-radius: 24px;
-        }
-
-        .theme-solaris .paper-note {
-            background: rgba(255, 255, 255, 0.03);
-            color: #d4af37;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            clip-path: none;
-            transform: none !important;
-            font-weight: 500;
-            text-transform: none;
-            letter-spacing: 0.02em;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            border-radius: 12px;
-            font-size: 1.1rem;
-        }
-
-        .theme-solaris .paper-note.active-choice {
-            background: #d4af37 !important;
-            color: #000 !important;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4) !important;
-            transform: translateY(-5px) !important;
-            border-color: #fff !important;
-        }
-
-        .theme-solaris h1 {
-            color: #d4af37;
-            background: linear-gradient(135deg, #fff 0%, #d4af37 50%, #8a6d3b 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 900;
-            letter-spacing: -0.02em;
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
-        }
-
-        .theme-solaris .turf-track {
-            background: #0a0a0a;
-            border: 1px solid #222;
-            background-image:
-                linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
-            background-size: 50px 100%;
-        }
-
-        .theme-solaris .race-horse img {
-            border: 2px solid #d4af37;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .marker {
-            font-family: 'Permanent Marker', cursive;
-        }
-
-        .race-horse {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: left 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 20;
-        }
-
-        .race-horse img {
-            width: 45px;
-            height: 45px;
-            border: 2px solid white;
-            border-radius: 4px;
-            background: #000;
-        }
-
-        .tally-mark {
-            width: 4px;
-            height: 16px;
-            border-radius: 2px;
-            display: inline-block;
-            margin-right: 2px;
-        }
-
-        .tally-green {
-            background: #22c55e;
-        }
-
-        .tally-red {
-            background: #ef4444;
-        }
-
-        .c64-boot {
-            position: fixed;
-            inset: 0;
-            background: #4444ff;
-            z-index: 2000;
-            padding: 40px;
-            font-family: 'VT323', monospace;
-            color: #ccccff;
-            font-size: 2.5rem;
-        }
-
-        .cursor {
-            width: 20px;
-            height: 30px;
-            background: #ccccff;
-            display: inline-block;
-            animation: blink 0.8s infinite;
-        }
-
-        @keyframes blink {
-
-            0%,
-            49% {
-                opacity: 1;
-            }
-
-            50%,
-            100% {
-                opacity: 0;
-            }
-        }
-
-        .receipt-paper {
-            background: #fff;
-            color: #000;
-            padding: 40px 20px;
-            font-family: monospace;
-            box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.6);
-            position: relative;
-        }
-
-        .cat-chip {
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .cat-chip.selected {
-            background: var(--pub-accent);
-            border-color: white;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .animate-throw {
-            animation: throwOut 0.8s forwards ease-in;
-            pointer-events: none;
-        }
-
-        @keyframes throwOut {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(600px, -400px) rotate(720deg);
-                opacity: 0;
-            }
-        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #131722; }
+        ::-webkit-scrollbar-thumb { background: #2a2e39; border-radius: 4px; }
+        body { background-color: #131722; color: #d1d4dc; overflow: hidden; user-select: none; font-family: 'Inter', sans-serif; }
+        .glass-panel { background: rgba(19, 23, 34, 0.85); backdrop-filter: blur(25px); border: 1px solid #2a2e39; }
+        .tv-card { background: #1c202b; border: 1px solid #2a2e39; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .animate-spin-custom { animation: spin 1.2s linear infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .reveal-bar { height: 4px; background: #1f222d; border-radius: 2px; overflow: hidden; }
+        .reveal-fill { height: 100%; background: linear-gradient(90deg, #2E5BFF, #FF9500); transition: width 0.1s linear; }
+        .copy-toast { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
-
-<body class="theme-normal min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700">
-
-    <div id="loading-screen" class="hidden c64-boot">
-        <p>**** COMMODORE 64 BASIC V2 ****</p>
-        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-        <br>
-        <p>READY.</p>
-        <p id="boot-cmd"></p>
-        <p id="boot-status"></p>
+<body>
+    <div id="root">
+        <div class="h-screen flex flex-col items-center justify-center bg-mirage">
+            <div class="animate-spin-custom w-12 h-12 border-4 border-tv-blue border-t-transparent rounded-full shadow-[0_0_20px_rgba(41,98,255,0.2)]"></div>
+            <p class="mt-8 text-[10px] tracking-[0.6em] font-black text-tv-muted uppercase">sChartS Precision Deck | v1.0.4</p>
+        </div>
     </div>
 
-    <div id="emoji-display"
-        class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[1500] opacity-0 pointer-events-none transition-opacity duration-300">
-        <p id="emoji-sender" class="text-xs text-white mb-2 uppercase font-sans tracking-widest"></p>
-        <span id="emoji-icon" class="text-9xl drop-shadow-2xl"></span>
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef, useCallback } = React;
+        const { createChart } = LightweightCharts;
 
-    <main class="w-full lg:w-2/3 p-4 lg:p-8 flex flex-col items-center overflow-y-auto min-h-screen">
-        <header class="text-center mb-6">
-            <h1 class="text-6xl marker text-orange-800 drop-shadow-lg italic">JizzQuiz</h1>
-            <p id="room-status" class="text-[9px] uppercase tracking-[0.5em] opacity-40 italic">System V2026.Stable</p>
-        </header>
+        const PEER_PREFIX = "SCHarts-";
+        const ASSETS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT", "XRPUSDT", "DOTUSDT", "AVAXUSDT", "MATICUSDT", "LINKUSDT", "NEARUSDT"];
 
-        <div id="race-container" class="w-full max-w-4xl mb-8 hidden">
-            <div class="turf-track h-[70px] relative rounded-lg shadow-2xl bg-[#22543d] border-4 border-[#1a3a3a] overflow-hidden"
-                style="background-image: repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(255,255,255,0.15) 50px);">
-                <div id="race-lane" class="w-full h-full relative px-10"></div>
-            </div>
-        </div>
+        // High-Quality SVG Icons
+        const Icons = {
+            Logo: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 80L35 55L55 65L90 20" stroke="#2962FF" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M25 85C25 85 45 45 75 35C105 25 90 90 55 95C20 100 25 85 25 85Z" stroke="#2962FF" strokeWidth="6" strokeLinecap="round"/>
+                    <circle cx="90" cy="20" r="5" fill="#00E676" />
+                </svg>
+            ),
+            Copy: () => <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="w-5 h-5"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>,
+            Check: () => <svg fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" className="w-4 h-4"><path d="M5 13l4 4L19 7"/></svg>,
+            Zap: () => <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
+            Trophy: () => <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="w-full h-full text-tv-gold"><path d="M6 9H4.5a2.5 2.5 0 010-5H6M18 9h1.5a2.5 2.5 0 000-5H18M4 22h16M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34M12 2v12.66"/></svg>,
+            Back: () => <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="w-5 h-5"><path d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
+        };
 
-        <div id="screen-lobby" class="w-full max-w-md space-y-6">
-            <div class="chalk-card p-8 rounded-xl">
-                <input type="text" id="username" placeholder="Name..."
-                    class="w-full bg-black/40 p-4 rounded-lg border border-white/10 text-3xl focus:border-orange-800 outline-none text-center font-bold mb-6">
-                <div id="avatar-grid" class="flex justify-center flex-wrap gap-2 mb-6"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startHost()"
-                        class="bg-orange-800 text-white py-4 rounded-xl font-bold uppercase shadow-lg">Host</button>
-                    <button onclick="document.getElementById('join-box').classList.toggle('hidden')"
-                        class="bg-zinc-800 py-4 rounded-xl font-bold uppercase">Join</button>
-                </div>
-                <div id="join-box" class="hidden mt-6 pt-6 border-t border-white/10 space-y-4">
-                    <input type="text" id="join-id" placeholder="Code..."
-                        class="w-full bg-black/20 p-3 rounded-xl border border-gray-700 text-center font-mono">
-                    <button onclick="joinGame()"
-                        class="w-full bg-emerald-800 py-3 rounded-xl font-bold uppercase">Connect</button>
-                </div>
-            </div>
+        const App = () => {
+            const [gameState, setGameState] = useState('LOBBY');
+            const [localName, setLocalName] = useState(localStorage.getItem('sc_name') || '');
+            const [localSeed, setLocalSeed] = useState(localStorage.getItem('sc_seed') || Math.random().toString(36).substring(7));
+            const [peer, setPeer] = useState(null);
+            const [conn, setConn] = useState(null);
+            const [roomID, setRoomID] = useState('');
+            const [isHost, setIsHost] = useState(false);
+            const [opponent, setOpponent] = useState(null);
+            const [activeAsset, setActiveAsset] = useState(null);
+            const [ohlcv, setOhlcv] = useState([]);
+            const [prediction, setPrediction] = useState('');
+            const [remotePrediction, setRemotePrediction] = useState(null);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isRevealing, setIsRevealing] = useState(false);
+            const [revealTick, setRevealTick] = useState(500);
+            const [showCopyMsg, setShowCopyMsg] = useState(false);
 
-            <div id="host-config" class="hidden chalk-card p-8 rounded-xl text-center">
-                <div onclick="copyRoomId()"
-                    class="bg-black/20 p-4 rounded-xl mb-6 cursor-pointer border border-white/10 text-white">
-                    <span id="display-id" class="text-4xl font-mono font-bold tracking-tighter">...</span>
-                </div>
+            const chartContainer = useRef(null);
+            const chartApi = useRef(null);
+            const barSeries = useRef(null);
 
-                <div class="mb-6">
-                    <p
-                        class="text-[10px] uppercase font-bold text-orange-500 mb-3 tracking-widest italic text-left ml-2">
-                        Themen-Mix:</p>
-                    <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-                </div>
+            // STABLE PeerJS Init
+            const initPeer = (id, asHost) => {
+                const config = {
+                    debug: 1,
+                    config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }, { 'urls': 'stun:stun1.l.google.com:19302' }] }
+                };
+                
+                const p = new Peer(asHost ? PEER_PREFIX + id : undefined, config);
+                
+                p.on('open', (pid) => {
+                    setPeer(p);
+                    setRoomID(asHost ? id : pid);
+                    if(!asHost) {
+                        const c = p.connect(PEER_PREFIX + id, { reliable: true });
+                        setupConn(c);
+                    }
+                });
 
-                <div class="grid grid-cols-2 gap-4 mb-8">
-                    <select id="cfg-count" class="bg-black border border-white/10 rounded-lg p-3 text-white">
-                        <option value="3">3 FRAGEN</option>
-                        <option value="5" selected>5 FRAGEN</option>
-                    </select>
-                    <select id="cfg-diff"
-                        class="bg-black border border-white/10 rounded-lg p-3 text-orange-500 font-bold uppercase">
-                        <option value="medium">ATZE</option>
-                        <option value="hard">LEGENDE</option>
-                    </select>
-                </div>
-                <button onclick="initiateQuiz()"
-                    class="bg-orange-800 w-full py-6 rounded-2xl text-3xl font-black uppercase italic shadow-2xl">ZÜNDEN!
-                    🍻</button>
-            </div>
-        </div>
-
-        <div id="screen-quiz" class="hidden w-full max-w-4xl">
-            <div id="quiz-progress" class="marker text-orange-600 text-3xl italic mb-6 px-4">...</div>
-            <div class="text-center px-4">
-                <div id="image-container" class="mb-8 hidden flex justify-center">
-                    <img id="question-image" referrerpolicy="no-referrer"
-                        class="mx-auto rounded-xl border-4 border-white shadow-2xl max-h-52 bg-white p-2 object-contain"
-                        src="">
-                </div>
-                <h2 id="question-text"
-                    class="text-3xl lg:text-5xl font-bold mb-12 text-white leading-tight drop-shadow-lg">...</h2>
-                <div id="mc-area" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
-                <div id="ghost-area" class="hidden max-w-md mx-auto">
-                    <div id="ghost-sequence" class="flex justify-center gap-3 mb-8"></div>
-                    <input type="text" id="ghost-input"
-                        class="bg-black border-4 border-orange-800 p-6 text-4xl text-center w-full rounded-xl mb-6 uppercase">
-                    <button onclick="submitChoice(document.getElementById('ghost-input').value)"
-                        class="bg-orange-800 px-10 py-4 rounded-xl font-black uppercase text-xl">Bestätigen</button>
-                </div>
-            </div>
-
-            <div id="resolution"
-                class="hidden mt-10 p-10 chalk-card rounded-[2rem] text-center relative overflow-hidden transition-all">
-                <p id="personal-feedback" class="text-2xl font-bold mb-4 uppercase"></p>
-                <h3 id="correct-text"
-                    class="text-4xl lg:text-6xl font-black text-white mb-8 italic underline decoration-orange-700"></h3>
-                <p id="sauf-text" class="text-xl text-yellow-500 font-bold mb-10 italic"></p>
-                <button id="host-next" onclick="nextRound()"
-                    class="hidden bg-white text-black px-16 py-4 rounded-xl font-black text-xl uppercase shadow-2xl mx-auto block hover:scale-105 transition">Nächste
-                    Runde ➔</button>
-            </div>
-        </div>
-
-        <div id="screen-results" class="hidden w-full max-w-2xl pb-20">
-            <h2 class="text-7xl marker text-orange-800 mb-10 text-center italic">ABRECHNUNG!</h2>
-            <div id="podium" class="space-y-4 mb-16"></div>
-            <div class="receipt-paper">
-                <h3 class="text-xl font-bold mb-6 text-center border-b-2 border-black pb-2 uppercase">SÜNDENREGISTER
-                </h3>
-                <div id="summary-table" class="space-y-4"></div>
-            </div>
-        </div>
-    </main>
-
-    <aside class="w-full lg:w-1/3 bg-black/40 p-6 flex flex-col border-t lg:border-t-0 lg:border-l border-white/5">
-        <div class="mb-8 p-4 chalk-card rounded-xl">
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="setTheme('theme-solaris')"
-                    class="bg-zinc-900 py-2 rounded text-[10px] font-bold uppercase border border-amber-500 text-amber-500 col-span-2">Solaris</button>
-                <button onclick="setTheme('theme-urban')"
-                    class="bg-zinc-700 py-2 rounded text-[10px] font-bold uppercase border border-cyan-400">Urban</button>
-                <button onclick="setTheme('theme-normal')"
-                    class="bg-zinc-800 py-2 rounded text-[10px] font-bold uppercase">Pub</button>
-                <button onclick="setTheme('theme-c64')"
-                    class="bg-blue-800 py-2 rounded text-[10px] font-bold uppercase">C64</button>
-                <button onclick="setTheme('theme-lsd')"
-                    class="bg-gradient-to-r from-purple-500 to-pink-500 py-2 rounded text-[10px] font-bold uppercase">LSD</button>
-            </div>
-        </div>
-        <h3 class="text-lg font-black uppercase text-orange-800 mb-2 text-center tracking-widest italic">Stammtisch</h3>
-        <p id="ready-count" class="text-center text-[10px] opacity-40 mb-6 font-mono tracking-widest">0/0 BEREIT</p>
-        <div id="player-list" class="flex-grow space-y-4 overflow-y-auto pr-2 custom-scrollbar"></div>
-        <div class="mt-6 pt-6 border-t border-white/10 grid grid-cols-5 gap-2">
-            <button onclick="sendEmoji('🍻')" class="text-2xl hover:scale-125 transition">🍻</button>
-            <button onclick="sendEmoji('🥃')" class="text-2xl hover:scale-125 transition">🥃</button>
-            <button onclick="sendEmoji('⚽')" class="text-2xl hover:scale-125 transition">⚽</button>
-            <button onclick="sendEmoji('🤮')" class="text-2xl hover:scale-125 transition">🤮</button>
-            <button onclick="sendEmoji('🤡')" class="text-2xl hover:scale-125 transition">🤡</button>
-            <button onclick="sendEmoji('🔥')" class="text-2xl hover:scale-125 transition">🔥</button>
-            <button onclick="sendEmoji('🚬')" class="text-2xl hover:scale-125 transition">🚬</button>
-            <button onclick="sendEmoji('💩')" class="text-2xl hover:scale-125 transition">💩</button>
-            <button onclick="sendEmoji('🏆')" class="text-2xl hover:scale-125 transition">🏆</button>
-            <button onclick="sendEmoji('🥨')" class="text-2xl hover:scale-125 transition">🥨</button>
-        </div>
-    </aside>
-
-    <script>
-        let peer, myId, myName, myAvatarIdx = 0, connections = [], isHost = false;
-        let gameState = { players: {}, questions: [], currentIndex: 0, status: 'LOBBY', showResolution: false, history: [], isLoading: false };
-
-        const TRIVIA_CATS = [
-            { id: 9, name: "Gemischt" }, { id: 11, name: "Film" }, { id: 12, name: "Musik" },
-            { id: 15, name: "Games" }, { id: 17, name: "Natur" }, { id: 18, name: "Computer" },
-            { id: 21, name: "Sport" }, { id: 23, name: "Historie" }, { id: 24, name: "Politik" }, { id: 26, name: "Promis" }
-        ];
-        let selectedCats = [9];
-
-        function setTheme(theme) { document.body.className = theme + ' min-h-screen flex flex-col lg:flex-row overflow-x-hidden transition-all duration-700'; localStorage.setItem('jizzquiz_theme', theme); }
-        setTheme(localStorage.getItem('jizzquiz_theme') || 'theme-solaris');
-
-        function proxify(url) { return url ? `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=500&output=png` : ''; }
-
-        async function translateText(text) {
-            if (!text) return "";
-            try {
-                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=de&dt=t&q=${encodeURIComponent(text)}`);
-                const data = await res.json(); return data[0][0][0];
-            } catch (e) { return text; }
-        }
-
-        // UI INIT
-        const AVATAR_SEEDS = ['Abe', 'Buster', 'Clyde', 'Zack', 'Fritz', 'Hulk', 'Bier', 'Pferd'];
-        const avatarGrid = document.getElementById('avatar-grid');
-        AVATAR_SEEDS.forEach((seed, idx) => {
-            const img = document.createElement('img'); img.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seed}`;
-            img.className = `avatar-option p-1 bg-white/5 w-[40px] cursor-pointer rounded ${idx === 0 ? 'selected' : ''}`;
-            img.onclick = () => { document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected')); img.classList.add('selected'); myAvatarIdx = idx; };
-            avatarGrid.appendChild(img);
-        });
-
-        const catGrid = document.getElementById('category-grid');
-        TRIVIA_CATS.forEach(cat => {
-            const chip = document.createElement('div'); chip.className = `cat-chip ${cat.id === 9 ? 'selected' : ''}`;
-            chip.innerText = cat.name;
-            chip.onclick = () => {
-                if (cat.id === 9) { selectedCats = [9]; document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected')); chip.classList.add('selected'); return; }
-                const idx = selectedCats.indexOf(cat.id);
-                if (idx > -1) { selectedCats.splice(idx, 1); chip.classList.remove('selected'); }
-                else { selectedCats.push(cat.id); chip.classList.add('selected'); document.querySelector('.cat-chip').classList.remove('selected'); const gIdx = selectedCats.indexOf(9); if (gIdx > -1) selectedCats.splice(gIdx, 1); }
-                if (selectedCats.length === 0) { selectedCats = [9]; document.querySelector('.cat-chip').classList.add('selected'); }
+                p.on('connection', (c) => setupConn(c));
+                
+                p.on('error', (err) => {
+                    console.error("PEER ERROR:", err.type);
+                    if(err.type === 'peer-unavailable') alert("Raum nicht gefunden oder Code ungültig.");
+                    if(err.type === 'unavailable-id') alert("Dieser Code ist bereits vergeben.");
+                    setGameState('LOBBY');
+                });
             };
-            catGrid.appendChild(chip);
-        });
 
-        const FOOTBALL_POOL = [
-            { mode: 'IMG', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/512px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png', question: "WELCHER KLUB?", correct_answer: "FC Bayern München", incorrect_answers: ["Augsburg", "Mainz", "Bochum"] },
-            { mode: 'IMG', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/512px-Borussia_Dortmund_logo.svg.png', question: "WELCHER KLUB?", correct_answer: "Borussia Dortmund", incorrect_answers: ["Schalke", "Bochum", "Essen"] }
-        ];
-
-        function init() {
-            peer = new Peer();
-            peer.on('open', id => { myId = id; document.getElementById('display-id').innerText = id; });
-            peer.on('connection', c => { c.on('open', () => { connections.push(c); c.on('data', d => handleData(d, c)); }); });
-        }
-
-        function startHost() {
-            myName = document.getElementById('username').value.trim() || "Host"; isHost = true;
-            document.getElementById('host-config').classList.remove('hidden');
-            gameState.players[myId] = { name: myName, avatar: AVATAR_SEEDS[myAvatarIdx], score: 0, lastPoints: 0, ready: false, tally: [] }; sync();
-        }
-
-        function joinGame() {
-            myName = document.getElementById('username').value.trim() || "Gast";
-            const hId = document.getElementById('join-id').value.trim(); const c = peer.connect(hId);
-            c.on('open', () => { connections.push(c); c.send({ type: 'JOIN', name: myName, avatar: AVATAR_SEEDS[myAvatarIdx] }); });
-            c.on('data', handleData);
-        }
-
-        function handleData(data, conn) {
-            if (data.type === 'JOIN') { gameState.players[conn.peer] = { name: data.name, avatar: data.avatar, score: 0, lastPoints: 0, ready: false, tally: [] }; sync(); }
-            if (data.type === 'SYNC') { gameState = data.state; updateUI(); }
-            if (data.type === 'SUBMIT') { const p = gameState.players[conn.peer]; p.ready = true; p.lastChoice = data.choice; checkAllReady(); }
-            if (data.type === 'REACTION') triggerEmoji(data.from, data.emoji);
-            if (data.type === 'BOOT_START') runGlobalBootSequence();
-        }
-
-        function checkAllReady() {
-            if (!isHost) return;
-            const all = Object.values(gameState.players);
-            if (all.every(p => p.ready)) {
-                const q = gameState.questions[gameState.currentIndex];
-                let roundsCorrect = 0;
-                all.forEach(p => {
-                    const pInput = (p.lastChoice || "").toString().trim().toUpperCase();
-                    const isCorrect = (q.mode === 'GHOST') ? (pInput === q.correct_answer.split('').reverse().join('')) : (pInput === q.correct_answer.toUpperCase());
-                    p.lastPoints = isCorrect ? 100 : 0; p.score += p.lastPoints;
-                    p.tally.push(isCorrect ? 'green' : 'red');
-                    if (isCorrect) roundsCorrect++;
+            const setupConn = (c) => {
+                setConn(c);
+                c.on('open', () => {
+                    c.send({ type: 'HANDSHAKE', name: localName, seed: localSeed });
+                    setGameState('WAITING');
                 });
-                gameState.saufText = roundsCorrect === 0 ? "TOTALAUSFALL! Alle bechern!" : (roundsCorrect === 1 ? "STREBER! Rest trinkt!" : "Puh, Safe.");
-                gameState.history.push({ q: q.question, ans: q.correct_answer, players: JSON.parse(JSON.stringify(gameState.players)) });
-                gameState.showResolution = true;
-            }
-            sync();
-        }
+                c.on('data', (d) => {
+                    if(d.type === 'HANDSHAKE') {
+                        setOpponent({ name: d.name, seed: d.seed });
+                        if(isHost) c.send({ type: 'HANDSHAKE', name: localName, seed: localSeed });
+                    }
+                    if(d.type === 'START_GAME') { setActiveAsset(d.asset); loadData(d.asset); }
+                    if(d.type === 'SUBMIT_PRICE') setRemotePrediction(parseFloat(d.price));
+                    if(d.type === 'REVEAL_START') setIsRevealing(true);
+                    if(d.type === 'RESTART') restartDuel();
+                });
+                c.on('close', () => { alert("Verbindung zum Gegner verloren."); location.reload(); });
+            };
 
-        function submitChoice(val) {
-            if (isHost) handleData({ type: 'SUBMIT', choice: val }, { peer: myId });
-            else connections[0].send({ type: 'SUBMIT', choice: val });
-            const all = document.querySelectorAll('.paper-note');
-            all.forEach(b => { b.disabled = true; if (b.innerHTML === val) b.classList.add('active-choice'); else { b.style.opacity = "0.3"; b.style.filter = "grayscale(100%)"; } });
-        }
+            const loadData = async (symbol) => {
+                setGameState('ARENA');
+                try {
+                    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=601`);
+                    const data = await res.json();
+                    setOhlcv(data.map(b => ({ time: b[0]/1000, open: parseFloat(b[1]), high: parseFloat(b[2]), low: parseFloat(b[3]), close: parseFloat(b[4]) })));
+                } catch(e) { alert("Fehler beim Laden der Marktdaten."); }
+            };
 
-        function sync() { if (!isHost) return; updateUI(); connections.forEach(c => c.send({ type: 'SYNC', state: gameState })); }
+            const startDuel = () => {
+                const asset = ASSETS[Math.floor(Math.random() * ASSETS.length)];
+                setActiveAsset(asset);
+                conn.send({ type: 'START_GAME', asset });
+                loadData(asset);
+            };
 
-        function updateUI() {
-            document.getElementById('loading-screen').classList.toggle('hidden', !gameState.isLoading);
-            const maxScore = Math.max(...Object.values(gameState.players).map(p => p.score), 1);
-            const leaderId = Object.keys(gameState.players).reduce((a, b) => gameState.players[a].score > gameState.players[b].score ? a : b, Object.keys(gameState.players)[0]);
+            const handlePrediction = () => {
+                setIsSubmitted(true);
+                conn.send({ type: 'SUBMIT_PRICE', price: prediction });
+            };
 
-            document.getElementById('race-container').classList.toggle('hidden', gameState.status !== 'PLAYING');
-            document.getElementById('race-lane').innerHTML = Object.values(gameState.players).map(p => {
-                const pos = Math.min((p.score / (maxScore + 150)) * 90, 95);
-                return `<div class="race-horse" style="left: ${pos}%"><img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}"></div>`;
-            }).join('');
+            const handleReveal = () => { setIsRevealing(true); conn.send({ type: 'REVEAL_START' }); };
+            
+            const restartDuel = () => {
+                setGameState('WAITING'); setIsSubmitted(false); setPrediction(''); setRemotePrediction(null); setRevealTick(500); setIsRevealing(false);
+            };
 
-            document.getElementById('player-list').innerHTML = Object.entries(gameState.players).sort((a, b) => b[1].score - a[1].score).map(([id, p]) => `
-            <div class="p-4 chalk-card rounded-xl border-l-8 ${p.ready ? 'border-green-500' : 'border-zinc-700'} relative">
-                <div class="flex items-center gap-4 relative z-10">
-                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${p.avatar}" class="w-10 h-10 rounded bg-black">
-                    <div class="flex-grow">
-                        <p class="text-[10px] font-black uppercase">${p.name} ${id === leaderId && p.score > 0 ? '👓' : ''}</p>
-                        <p class="text-xl font-black text-orange-600">${p.score}</p>
-                        <div class="flex flex-wrap gap-1 mt-1">${(p.tally || []).map(t => `<div class="tally-mark tally-${t}"></div>`).join('')}</div>
-                    </div>
-                </div>
-            </div>`).join('');
+            const copyToClipboard = () => {
+                navigator.clipboard.writeText(roomID);
+                setShowCopyMsg(true);
+                setTimeout(() => setShowCopyMsg(false), 2000);
+            };
 
-            document.getElementById('ready-count').innerText = `${Object.values(gameState.players).filter(p => p.ready).length}/${Object.keys(gameState.players).length} BEREIT`;
-            if (gameState.status === 'PLAYING') renderArena();
-            if (gameState.status === 'RESULTS') renderFinal();
-        }
-
-        async function initiateQuiz() {
-            connections.forEach(c => c.send({ type: 'BOOT_START' })); await runGlobalBootSequence();
-            gameState.isLoading = true; sync(); await typeBoot();
-            const count = parseInt(document.getElementById('cfg-count').value);
-            const triviaAmount = Math.max(0, count - 2); // Reservoir for Special (Football/Ghost)
-            const diff = document.getElementById('cfg-diff').value;
-            const targetCat = selectedCats[Math.floor(Math.random() * selectedCats.length)];
-            const catUrl = targetCat === 9 ? '' : `&category=${targetCat}`;
-
-            try {
-                const res = await fetch(`https://opentdb.com/api.php?amount=${triviaAmount}${catUrl}&difficulty=${diff}&type=multiple`);
-                const data = await res.json();
-                gameState.questions = [];
-                for (let q of data.results) {
-                    gameState.questions.push({
-                        mode: 'MC', question: await translateText(q.question),
-                        correct_answer: await translateText(q.correct_answer),
-                        incorrect_answers: await Promise.all(q.incorrect_answers.map(async a => await translateText(a)))
+            // TradingView Charts Execution
+            useEffect(() => {
+                if((gameState === 'ARENA' || gameState === 'SHOWDOWN') && chartContainer.current && ohlcv.length > 0) {
+                    if(chartApi.current) chartApi.current.remove();
+                    const chart = createChart(chartContainer.current, {
+                        layout: { background: { color: '#131722' }, textColor: '#d1d4dc', fontFamily: 'Inter' },
+                        grid: { vertLines: { color: '#1f222d' }, horzLines: { color: '#1f222d' } },
+                        timeScale: { borderColor: '#2a2e39', timeVisible: true },
+                        rightPriceScale: { borderColor: '#2a2e39' }
                     });
+                    const series = chart.addCandlestickSeries({ upColor: '#26a69a', downColor: '#ef5350', borderVisible: false });
+                    
+                    if(gameState === 'ARENA') { 
+                        series.setData(ohlcv.slice(0, 500)); 
+                    } else {
+                        series.setData(ohlcv.slice(0, revealTick));
+                        series.createPriceLine({ price: isHost ? parseFloat(prediction) : remotePrediction, color: '#2E5BFF', lineWidth: 2, title: isHost ? 'DU' : opponent?.name });
+                        series.createPriceLine({ price: isHost ? remotePrediction : parseFloat(prediction), color: '#FF9500', lineWidth: 2, title: isHost ? opponent?.name : 'DU' });
+                    }
+                    chartApi.current = chart; barSeries.current = series;
+                    chart.timeScale().fitContent();
+                    return () => chart.remove();
                 }
-                gameState.questions.splice(1, 0, FOOTBALL_POOL[Math.floor(Math.random() * FOOTBALL_POOL.length)]);
-                gameState.questions.push({ mode: 'GHOST', question: "CODE MERKEN!", correct_answer: Math.floor(1000 + Math.random() * 8999).toString() });
-                gameState.status = 'PLAYING'; gameState.currentIndex = 0; gameState.isLoading = false; resetReadiness(); sync();
-            } catch (e) { gameState.isLoading = false; sync(); alert("API Fehler! Bitte Seite neu laden."); }
-        }
+            }, [gameState, ohlcv, revealTick]);
 
-        async function typeBoot() {
-            const cmd = document.getElementById('boot-cmd'); const status = document.getElementById('boot-status'); const text = 'LOAD "JizzQuiz", 8, 1';
-            cmd.innerHTML = ''; for (let char of text) { cmd.innerHTML += char; await new Promise(r => setTimeout(r, 60)); }
-            cmd.innerHTML += '<span class="cursor"></span>'; await new Promise(r => setTimeout(r, 400));
-            status.innerHTML = 'SEARCHING FOR JizzQuiz<br>LOADING<br>READY.<br>RUN<span class="cursor"></span>';
-            await new Promise(r => setTimeout(r, 1000));
-        }
+            useEffect(() => { if(isSubmitted && remotePrediction !== null) setGameState('SHOWDOWN'); }, [isSubmitted, remotePrediction]);
 
-        async function runGlobalBootSequence() {
-            const screen = document.getElementById('loading-screen'); screen.classList.remove('hidden');
-            document.getElementById('boot-cmd').innerHTML = ''; document.getElementById('boot-status').innerHTML = '';
-        }
+            useEffect(() => {
+                if(isRevealing && revealTick < 600) {
+                    const t = setTimeout(() => {
+                        setRevealTick(p => p + 1);
+                        if(barSeries.current) barSeries.current.update(ohlcv[revealTick]);
+                    }, 50);
+                    return () => clearTimeout(t);
+                } else if(revealTick >= 600) { setTimeout(() => setGameState('RESULT'), 1500); }
+            }, [isRevealing, revealTick]);
 
-        function renderArena() {
-            document.getElementById('screen-lobby').classList.add('hidden'); document.getElementById('screen-quiz').classList.remove('hidden');
-            const q = gameState.questions[gameState.currentIndex];
-            document.getElementById('quiz-progress').innerText = `FRAGE ${gameState.currentIndex + 1} / ${gameState.questions.length}`;
-            document.getElementById('question-text').innerHTML = q.question;
-            const areas = ['mc-area', 'image-container', 'ghost-area']; areas.forEach(a => document.getElementById(a).classList.add('hidden'));
+            // UI Elements
+            const PlayerTag = ({ seed, size="w-16 h-16", color="#2962FF", label="" }) => (
+                <div className="flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom duration-500">
+                    <div className={`relative ${size}`}>
+                        <div className="absolute inset-0 rounded-full blur-[6px] opacity-25" style={{background: color}}></div>
+                        <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}`} className={`relative rounded-full border-2 bg-grid shadow-2xl h-full w-full object-cover`} style={{borderColor: color}} />
+                    </div>
+                    {label && <div className="text-xl font-bold italic text-white uppercase tracking-tighter">{label}</div>}
+                </div>
+            );
 
-            if (gameState.showResolution) {
-                const res = document.getElementById('resolution'); res.classList.remove('hidden'); const p = gameState.players[myId];
-                document.getElementById('personal-feedback').innerHTML = p.lastPoints > 0 ? '<span class="text-green-500">RICHTIG! ✅</span>' : `<span class="text-red-500">DANEBEN! ("${p.lastChoice || 'Nix'}") ❌</span>`;
-                document.getElementById('correct-text').innerHTML = (q.mode === 'GHOST') ? q.correct_answer.split('').reverse().join('') : q.correct_answer;
-                document.getElementById('sauf-text').innerText = gameState.saufText;
-                if (isHost) document.getElementById('host-next').classList.remove('hidden');
-                if (p.lastPoints === 0) document.querySelector('.active-choice')?.classList.add('animate-throw');
-            } else {
-                document.getElementById('resolution').classList.add('hidden');
-                if (q.mode === 'IMG') { document.getElementById('image-container').classList.remove('hidden'); document.getElementById('question-image').src = proxify(q.image); renderMC(q); }
-                else if (q.mode === 'GHOST') { document.getElementById('ghost-area').classList.remove('hidden'); renderGhost(q); }
-                else { renderMC(q); }
+            if(gameState === 'ARENA' || gameState === 'SHOWDOWN') return (
+                <div className="flex h-screen bg-mirage overflow-hidden font-sans">
+                    <aside className="w-80 border-r border-tv-border flex flex-col bg-mirage/95 z-20 shadow-2xl">
+                        <div className="p-8 border-b border-tv-border flex items-center gap-5">
+                            <div className="w-10 h-10"><Icons.Logo /></div>
+                            <div><h2 className="text-2xl font-black italic text-white tracking-tighter leading-tight">sChartS</h2><span className="text-[10px] font-bold text-tv-muted uppercase tracking-[0.4em]">Battle Unit</span></div>
+                        </div>
+                        <div className="flex-1 p-6 space-y-10 overflow-y-auto">
+                            <div className="space-y-4">
+                                <span className="text-[10px] font-black text-tv-muted uppercase tracking-widest px-1">Markt Instrument</span>
+                                <div className="tv-card p-6 rounded-3xl relative overflow-hidden group border-tv-blue/20">
+                                    <div className="absolute inset-0 bg-tv-blue/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <div className="flex items-center justify-between"><span className="text-3xl font-black font-mono text-white italic">{activeAsset}</span><span className="bg-tv-blue/10 text-tv-blue text-[10px] px-4 py-1.5 rounded-full font-black">1H</span></div>
+                                </div>
+                            </div>
+                            <div className="space-y-5 pt-5 border-t border-tv-border">
+                                <label className="text-[10px] font-black text-tv-muted uppercase tracking-widest px-1">Deine Prognose</label>
+                                <div className="relative">
+                                    <input type="number" disabled={isSubmitted} value={prediction} onChange={(e)=>setPrediction(e.target.value)} className="w-full bg-grid/30 border-2 border-tv-border p-6 rounded-3xl font-mono text-4xl text-white outline-none focus:border-tv-blue transition-all" placeholder="0.00" />
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-bold text-tv-muted">USDT</div>
+                                </div>
+                                <button disabled={isSubmitted || !prediction} onClick={handlePrediction} className="w-full bg-tv-blue text-white py-5 rounded-2xl font-black text-lg tracking-widest flex items-center justify-center gap-3 hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-20">
+                                    <Icons.Send />
+                                    <span>{isSubmitted ? "BEREIT" : "ANALYSE SENDEN"}</span>
+                                </button>
+                            </div>
+                            {isRevealing && (
+                                <div className="p-6 bg-tv-blue/10 border border-tv-blue/30 rounded-3xl space-y-5 animate-in slide-in-from-bottom duration-500">
+                                    <div className="flex justify-between items-center"><span className="text-[10px] font-black text-tv-blue uppercase tracking-widest">Live Distanz</span><span className="text-5xl font-mono font-black text-white">{(600-revealTick)}</span></div>
+                                    <div className="reveal-bar"><div className="reveal-fill" style={{width:`${(revealTick-500)}%`}}></div></div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-6 border-t border-tv-border bg-grid/10 flex items-center gap-4">
+                            <PlayerTag seed={localSeed} size="w-14 h-14" />
+                            <div className="flex flex-col"><span className="text-base font-black text-white italic">{localName}</span><span className="text-[9px] font-bold text-tv-muted uppercase tracking-widest">Status: Trading</span></div>
+                        </div>
+                    </aside>
+                    <main className="flex-1 relative">
+                        <header className="absolute top-0 left-0 right-0 h-16 border-b border-tv-border flex items-center justify-between px-10 z-10 bg-mirage/60 backdrop-blur-xl">
+                            <div className="flex items-center gap-2"><Icons.Zap /><span className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic">Precision Arena</span></div>
+                            <div className="flex items-center gap-8">
+                                {remotePrediction !== null && !isRevealing && isHost && <button onClick={handleReveal} className="bg-tv-gold text-black px-10 py-2.5 rounded-xl font-black italic tracking-widest shadow-xl shadow-yellow-500/20 animate-pulse transition-all hover:scale-105 active:scale-95">REVEAL STARTEN</button>}
+                                {remotePrediction !== null && <div className="flex items-center gap-3 bg-tv-up/10 px-5 py-2 rounded-full border border-tv-up/30 text-tv-up text-[10px] font-bold uppercase tracking-widest leading-none">Gegner Bereit</div>}
+                            </div>
+                        </header>
+                        <div className="w-full h-full" ref={chartContainer}></div>
+                    </main>
+                </div>
+            );
+
+            if(gameState === 'RESULT') {
+                const final = ohlcv[599]?.close || 0;
+                const mD = Math.abs((parseFloat(prediction)-final)/final*100);
+                const rD = Math.abs((remotePrediction-final)/final*100);
+                const win = mD < rD;
+                return (
+                    <div className="h-screen bg-mirage flex flex-col items-center justify-center p-12 overflow-y-auto animate-in fade-in zoom-in duration-1000">
+                        <div className="max-w-6xl w-full text-center space-y-20 relative">
+                            <div className="absolute inset-0 bg-tv-blue/5 blur-[120px] rounded-full -z-10"></div>
+                            <div className="space-y-4">
+                                <div className="w-32 h-32 mx-auto animate-float"><Icons.Trophy /></div>
+                                <h1 className="text-[11rem] font-black italic tracking-tighter text-white leading-none">THE <span className="text-tv-blue">KING</span></h1>
+                                <p className="text-xl font-mono font-bold text-tv-muted uppercase tracking-[1em] opacity-40">Result Protocol</p>
+                            </div>
+                            <div className="grid grid-cols-3 gap-16 items-center">
+                                <div className={`glass-panel p-12 rounded-[4rem] transition-all duration-700 ${win ? 'border-tv-gold scale-110 shadow-[0_0_80px_rgba(255,215,0,0.15)]' : 'opacity-40 grayscale blur-[1px]'}`}>
+                                    <PlayerTag seed={localSeed} size="w-32 h-32" color={win?"#FFD700":"#2962FF"} />
+                                    <h3 className="text-2xl font-black italic text-white mt-8">{localName}</h3>
+                                    <div className="text-6xl font-mono font-black mt-4 text-tv-blue">{myD.toFixed(4)}%</div>
+                                </div>
+                                <div className="space-y-10">
+                                    <div className="space-y-2"><div className="text-[11px] font-bold text-tv-muted uppercase tracking-[0.5em]">Markt Schluss</div><div className="text-7xl font-mono font-black text-tv-up select-all">{final.toFixed(2)}</div></div>
+                                    <div className="h-[2px] bg-gradient-to-r from-transparent via-tv-border to-transparent"></div>
+                                    <div className="text-sm font-bold text-tv-muted italic">{activeAsset} | 1H</div>
+                                </div>
+                                <div className={`glass-panel p-12 rounded-[4rem] transition-all duration-700 ${!win ? 'border-tv-gold scale-110 shadow-[0_0_80px_rgba(255,215,0,0.15)]' : 'opacity-40 grayscale blur-[1px]'}`}>
+                                    <PlayerTag seed={opponent?.seed} size="w-32 h-32" color={!win?"#FFD700":"#F15B2F"} />
+                                    <h3 className="text-2xl font-black italic text-white mt-8">{opponent?.name}</h3>
+                                    <div className="text-6xl font-mono font-black mt-4 text-tv-p2">{rD.toFixed(4)}%</div>
+                                </div>
+                            </div>
+                            <button onClick={()=>location.reload()} className="bg-tv-gold text-black px-24 py-8 text-3xl font-black italic rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all">NEUE SESSION</button>
+                        </div>
+                    </div>
+                );
             }
-        }
 
-        function renderMC(q) {
-            const mc = document.getElementById('mc-area'); mc.classList.remove('hidden');
-            if (mc.dataset.rd != gameState.currentIndex) {
-                mc.dataset.rd = gameState.currentIndex; mc.innerHTML = '';
-                [...(q.incorrect_answers || []), q.correct_answer].sort(() => Math.random() - 0.5).forEach(o => {
-                    const b = document.createElement('button'); b.className = "paper-note cursor-pointer";
-                    b.style.setProperty('--rotation', `${Math.random() * 6 - 3}deg`); b.innerHTML = o; b.onclick = () => submitChoice(o); mc.appendChild(b);
-                });
-            }
-        }
+            return (
+                <div className="h-screen bg-mirage text-tv-text flex flex-col items-center justify-center p-10 relative overflow-hidden">
+                    {gameState === 'LOBBY' && (
+                        <div className="w-full max-w-6xl space-y-24 animate-in fade-in duration-1000">
+                            <div className="text-center space-y-6">
+                                <div className="w-32 h-32 mx-auto animate-float drop-shadow-[0_0_30px_rgba(41,98,255,0.4)]"><Icons.Logo /></div>
+                                <h1 className="text-[12rem] font-black italic text-white tracking-tighter leading-none select-none">sChart<span className="text-tv-blue underline decoration-[15px] decoration-tv-blue">S</span></h1>
+                                <p className="text-2xl font-mono font-bold text-tv-muted uppercase tracking-[0.8em] opacity-40">Precision Trading Pit</p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-12">
+                                <section className="glass-panel p-16 rounded-[4rem] border-b-[16px] border-b-tv-blue space-y-12 shadow-2xl">
+                                    <div className="flex flex-col items-center gap-10">
+                                        <div onClick={()=>setLocalSeed(Math.random().toString(36).substring(7))} className="cursor-pointer transition-transform hover:scale-105 active:scale-95"><PlayerTag seed={localSeed} size="w-48 h-48" /></div>
+                                        <div className="w-full space-y-4 text-left">
+                                            <label className="text-[10px] font-black text-tv-muted uppercase tracking-widest px-4 block">DEIN NAME</label>
+                                            <input type="text" value={localName} onChange={(e)=>{setLocalName(e.target.value); localStorage.setItem('sc_name', e.target.value)}} placeholder="Z.B. ChartKing_X" className="w-full bg-grid/30 border-2 border-tv-border p-6 rounded-[2.5rem] font-mono text-3xl text-center text-white focus:border-tv-blue outline-none transition-all shadow-inner" />
+                                        </div>
+                                    </div>
+                                </section>
+                                <section className="glass-panel p-16 rounded-[4rem] border-b-[16px] border-b-tv-gold space-y-10 flex flex-col justify-between shadow-2xl">
+                                    <button onClick={()=>{setIsHost(true);initPeer(Math.random().toString(36).substring(2,6).toUpperCase(), true)}} disabled={!localName} className="w-full bg-tv-blue text-white py-12 rounded-[2.5rem] text-4xl font-black italic shadow-2xl hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-20">HOST SESSION</button>
+                                    <div className="flex items-center gap-6"><div className="flex-1 h-[2px] bg-tv-border"></div><span className="text-[11px] font-black text-tv-muted uppercase tracking-[0.4em]">ODER BEITRETEN</span><div className="flex-1 h-[2px] bg-tv-border"></div></div>
+                                    <input type="text" placeholder="BATTLE CODE" maxLength={4} onChange={(e)=>{const v=e.target.value.toUpperCase(); if(v.length===4){setIsHost(false);initPeer(v, false)}}} className="w-full bg-grid/30 border-2 border-tv-border p-6 rounded-[2.5rem] font-mono text-5xl text-center text-tv-blue font-black tracking-[0.4em] outline-none" />
+                                </section>
+                            </div>
+                        </div>
+                    )}
+                    {gameState === 'WAITING' && (
+                        <div className="w-full max-w-5xl space-y-16 text-center animate-in zoom-in duration-500">
+                            <h2 className="text-8xl font-black text-white italic tracking-tighter uppercase">{opponent ? "READY FOR BATTLE" : "SCANNING PEERS..."}</h2>
+                            <div className="glass-panel p-20 rounded-[5rem] space-y-16 border-t-[20px] border-t-tv-blue shadow-3xl relative">
+                                <div className="flex flex-col gap-6">
+                                    <div className="text-[14px] font-black text-tv-muted uppercase tracking-[0.8em]">BATTLE ID</div>
+                                    <div className="flex items-center justify-center gap-6">
+                                        <div className="text-[12rem] font-black text-tv-blue font-mono leading-none tracking-widest">{roomID}</div>
+                                        <button onClick={copyToClipboard} className="p-5 rounded-3xl bg-tv-blue/10 border border-tv-blue/30 text-tv-blue hover:bg-tv-blue/20 transition-all active:scale-90">
+                                            {showCopyMsg ? <Icons.Check /> : <Icons.Copy />}
+                                        </button>
+                                    </div>
+                                    {showCopyMsg && <div className="text-tv-up font-bold text-xs uppercase tracking-widest copy-toast">CODE KOPIERT!</div>}
+                                </div>
+                                <div className="grid grid-cols-2 gap-32">
+                                    <div className="space-y-6"><PlayerTag seed={localSeed} size="w-56 h-56" color="#2E5BFF" label={localName} /><span className="text-[10px] font-bold text-tv-blue tracking-[0.4em] uppercase">Session Owner</span></div>
+                                    <div className={`space-y-6 transition-all duration-1000 ${!opponent ? 'opacity-5 blur-[30px] scale-50' : 'opacity-100'}`}>
+                                        <PlayerTag seed={opponent?.seed||'X'} size="w-56 h-56" color="#F15B2F" label={opponent?.name||'---'} />
+                                        <span className="text-[10px] font-bold text-tv-p2 tracking-[0.4em] uppercase">Rival Trader</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {isHost && (
+                                <button disabled={!opponent} onClick={startDuel} className="w-full bg-tv-gold text-black py-12 rounded-[3.5rem] text-7xl font-black italic tracking-widest shadow-tv-gold/30 animate-bounce disabled:opacity-20 disabled:animate-none active:scale-95 transition-all">
+                                    ENTER ARENA
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        };
 
-        function renderGhost(q) {
-            const gs = document.getElementById('ghost-sequence');
-            gs.innerHTML = q.correct_answer.split('').map(n => `<div class="p-4 border-2 border-orange-700 text-4xl font-bold">${n}</div>`).join('');
-            setTimeout(() => { gs.innerHTML = q.correct_answer.split('').map(() => `<div class="p-4 border-2 border-orange-700 text-4xl font-bold">?</div>`).join(''); }, 2000);
-            document.getElementById('ghost-input').value = '';
-        }
-
-        function triggerEmoji(from, emoji) {
-            const ov = document.getElementById('emoji-display'); document.getElementById('emoji-sender').innerText = "FROM: " + from; document.getElementById('emoji-icon').innerText = emoji;
-            ov.classList.add('opacity-100'); setTimeout(() => ov.classList.remove('opacity-100'), 1500);
-        }
-
-        function sendEmoji(e) { if (isHost) handleData({ type: 'REACTION', from: myName, emoji: e }, { peer: myId }); connections.forEach(c => c.send({ type: 'REACTION', from: myName, emoji: e })); if (!isHost) triggerEmoji(myName, e); }
-        function nextRound() { gameState.currentIndex++; if (gameState.currentIndex >= gameState.questions.length) gameState.status = 'RESULTS'; else resetReadiness(); sync(); }
-        function resetReadiness() { gameState.showResolution = false; Object.values(gameState.players).forEach(p => { p.ready = false; p.lastChoice = null; p.lastPoints = 0; }); }
-
-        function renderFinal() {
-            document.getElementById('screen-quiz').classList.add('hidden'); document.getElementById('screen-results').classList.remove('hidden');
-            document.getElementById('podium').innerHTML = Object.values(gameState.players).sort((a, b) => b.score - a.score).map((p, i) => `
-            <div class="flex justify-between chalk-card p-4 rounded-xl mb-2"><span class="text-xl">#${i + 1} ${p.name}</span><span class="text-xl text-yellow-500">${p.score}</span></div>`).join('');
-            document.getElementById('summary-table').innerHTML = gameState.history.map((h, i) => `
-            <div class="border-b border-gray-300 pb-2 mb-2 text-left"><p class="font-bold text-[9px] uppercase">Q${i + 1}: ${h.q}</p><div class="flex flex-wrap gap-2 mt-1">
-                ${Object.values(h.players).map(p => { const isCorrect = p.lastPoints > 0; return `<span class="text-[8px] px-1 rounded border ${isCorrect ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'}">${p.name}: ${p.lastChoice || '-'}</span>`; }).join('')}
-            </div></div>`).join('');
-            confetti({ particleCount: 1000, spread: 120, origin: { y: 0.6 } });
-        }
-
-        init();
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
-
 </html>
